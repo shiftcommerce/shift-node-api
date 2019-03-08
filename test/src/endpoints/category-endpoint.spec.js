@@ -1,4 +1,4 @@
-const getCategoryByIdV1 = require('../../../src/endpoints/category-endpoint')
+const { getCategoryByIdV1 } = require('../../../src/endpoints/category-endpoint')
 const nock = require('nock')
 const axios = require('axios')
 const httpAdapter = require('axios/lib/adapters/http')

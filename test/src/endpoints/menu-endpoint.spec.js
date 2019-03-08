@@ -1,4 +1,4 @@
-const getMenusV1 = require('../../../src/endpoints/menu-endpoint')
+const { getMenusV1 } = require('../../../src/endpoints/menu-endpoint')
 const nock = require('nock')
 const axios = require('axios')
 const httpAdapter = require('axios/lib/adapters/http')

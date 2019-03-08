@@ -4,4 +4,4 @@ function getProductByIdV1(id, query) {
   return HTTPClient.get(`v1/products/${id}`, query)
 }
 
-module.exports = getProductByIdV1
+module.exports = { getProductByIdV1 }

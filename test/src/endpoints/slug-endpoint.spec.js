@@ -1,4 +1,4 @@
-const getSlugDataV1 = require('../../../src/endpoints/slug-endpoint')
+const { getSlugDataV1 } = require('../../../src/endpoints/slug-endpoint')
 const nock = require('nock')
 const axios = require('axios')
 const httpAdapter = require('axios/lib/adapters/http')

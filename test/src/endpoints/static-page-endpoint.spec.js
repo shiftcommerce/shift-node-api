@@ -1,4 +1,4 @@
-const getStaticPageV1 = require('../../../src/endpoints/static-page-endpoint')
+const { getStaticPageV1 } = require('../../../src/endpoints/static-page-endpoint')
 const nock = require('nock')
 const axios = require('axios')
 const httpAdapter = require('axios/lib/adapters/http')

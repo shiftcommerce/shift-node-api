@@ -11,7 +11,7 @@ const accountEndpoints = require('./endpoints/account-endpoints')
 
 class SHIFTClient {
   getMenusV1 (query) {
-    return menuEndpoint(query)
+    return menuEndpoint.getMenusV1(query)
       .then(response => {
         const parsedPayload = new ApiParser().parse(response.data)
         return {
@@ -89,7 +89,7 @@ class SHIFTClient {
   }
 
   getSlugDataV1 (queryObject) {
-    return slugEndpoint(queryObject)
+    return slugEndpoint.getSlugDataV1(queryObject)
       .then(response => {
         const parsedPayload = new ApiParser().parse(response.data)
         return {
@@ -100,17 +100,17 @@ class SHIFTClient {
   }
 
   getProductByIdV1 (id, query) {
-    return productEndpoint(id, query)
+    return productEndpoint.getProductByIdV1(id, query)
       .then(this.determineResponse)
   }
 
   getStaticPageV1 (id, query) {
-    return staticPageEndpoint(id, query)
+    return staticPageEndpoint.getStaticPageV1(id, query)
       .then(this.determineResponse)
   }
 
   getCategoryByIdV1 (id) {
-    return categoryEndpoint(id)
+    return categoryEndpoint.getCategoryByIdV1(id)
       .then(this.determineResponse)
   }
 

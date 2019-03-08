@@ -1,4 +1,4 @@
-const getProductByIdV1 = require('../../../src/endpoints/product-endpoint')
+const { getProductByIdV1 } = require('../../../src/endpoints/product-endpoint')
 const nock = require('nock')
 const axios = require('axios')
 const httpAdapter = require('axios/lib/adapters/http')
