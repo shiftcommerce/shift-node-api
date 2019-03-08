@@ -113,7 +113,6 @@ describe('assignCartToCustomerV1', () => {
     }
 
     nock(shiftApiConfig.get().apiHost)
-    .log(console.log)
       .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
       .reply(201, { cart: 'cart_data' })
 
