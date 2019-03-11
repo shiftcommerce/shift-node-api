@@ -1,4 +1,4 @@
-const { getProductByIdV1 } = require('../../../src/endpoints/product-endpoints')
+const { getProductV1 } = require('../../../src/endpoints/product-endpoints')
 const nock = require('nock')
 const axios = require('axios')
 const httpAdapter = require('axios/lib/adapters/http')
@@ -18,7 +18,7 @@ beforeEach(() => {
 
 afterEach(() => { nock.cleanAll() })
 
-describe('getProductByIdV1', () => {
+describe('getProductV1', () => {
   it('returns a product when given a correct id', () => {
     const queryObject = {
       include: 'asset_files,variants,bundles,bundles.asset_files,template,meta.*',
@@ -30,7 +30,7 @@ describe('getProductByIdV1', () => {
       .query(queryObject)
       .reply(200, productResponse)
 
-    return getProductByIdV1(172, queryObject)
+    return getProductV1(172, queryObject)
       .then(response => {
         expect(response.status).toEqual(200)
         expect(response.data).toEqual(productResponse)
@@ -62,7 +62,7 @@ describe('getProductByIdV1', () => {
 
     expect.assertions(2)
 
-    return getProductByIdV1(20000, queryObject)
+    return getProductV1(20000, queryObject)
       .catch(error => {
         expect(error).toEqual(new Error('Request failed with status code 404'))
         expect(error.response.data.errors[0].title).toEqual('Record not found')

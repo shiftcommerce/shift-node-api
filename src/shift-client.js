@@ -88,8 +88,8 @@ class SHIFTClient {
     return cartEndpoints.setCartShippingAddressV1(addressId, cartId)
   }
 
-  getSlugDataV1 (queryObject) {
-    return slugEndpoints.getSlugDataV1(queryObject)
+  getResourceBySlugV1 (queryObject) {
+    return slugEndpoints.getResourceBySlugV1(queryObject)
       .then(response => {
         const parsedPayload = new ApiParser().parse(response.data)
         return {
@@ -99,8 +99,8 @@ class SHIFTClient {
       })
   }
 
-  getProductByIdV1 (id, query) {
-    return productEndpoints.getProductByIdV1(id, query)
+  getProductV1 (id, query) {
+    return productEndpoints.getProductV1(id, query)
       .then(this.determineResponse)
   }
 
@@ -109,8 +109,8 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
-  getCategoryByIdV1 (id) {
-    return categoryEndpoints.getCategoryByIdV1(id)
+  getCategoryV1 (id) {
+    return categoryEndpoints.getCategoryV1(id)
       .then(this.determineResponse)
   }
 

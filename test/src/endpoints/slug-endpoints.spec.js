@@ -1,4 +1,4 @@
-const { getSlugDataV1 } = require('../../../src/endpoints/slug-endpoints')
+const { getResourceBySlugV1 } = require('../../../src/endpoints/slug-endpoints')
 const nock = require('nock')
 const axios = require('axios')
 const httpAdapter = require('axios/lib/adapters/http')
@@ -18,7 +18,7 @@ beforeEach(() => {
 
 afterEach(() => { nock.cleanAll() })
 
-describe('getSlugDataV1', () => {
+describe('getResourceBySlugV1', () => {
   test('endpoint returns a slug', () => {
     const queryObject = {
       filter: {
@@ -38,7 +38,7 @@ describe('getSlugDataV1', () => {
       .query(true)
       .reply(200, slugResponse)
 
-    return getSlugDataV1(queryObject)
+    return getResourceBySlugV1(queryObject)
       .then(response => {
         expect(response.status).toEqual(200)
         expect(response.data).toEqual(slugResponse)
@@ -65,7 +65,7 @@ describe('getSlugDataV1', () => {
 
     expect.assertions(1)
 
-    return getSlugDataV1(queryObject)
+    return getResourceBySlugV1(queryObject)
       .catch(error => {
         expect(error).toEqual(new Error('Request failed with status code 500'))
       })

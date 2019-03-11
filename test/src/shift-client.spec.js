@@ -320,7 +320,7 @@ describe('SHIFTClient', () => {
     })
   })
 
-  describe('getSlugDataV1', () => {
+  describe('getResourceBySlugV1', () => {
     it('endpoint returns a slug', () => {
       const queryObject = {
         filter: {
@@ -340,7 +340,7 @@ describe('SHIFTClient', () => {
         .query(true)
         .reply(200, slugResponse)
 
-      return SHIFTClient.getSlugDataV1(queryObject)
+      return SHIFTClient.getResourceBySlugV1(queryObject)
         .then(response => {
           expect(response.status).toEqual(200)
           expect(response.data).toEqual(slugResponseParsed)
@@ -367,14 +367,14 @@ describe('SHIFTClient', () => {
 
       expect.assertions(1)
 
-      return SHIFTClient.getSlugDataV1(queryObject)
+      return SHIFTClient.getResourceBySlugV1(queryObject)
         .catch(error => {
           expect(error).toEqual(new Error('Request failed with status code 500'))
         })
     })
   })
 
-  describe('getProductByIdV1', () => {
+  describe('getProductV1', () => {
     it('returns a product when given a correct id', () => {
       const queryObject = {
         include: 'asset_files,variants,bundles,bundles.asset_files,template,meta.*',
@@ -386,7 +386,7 @@ describe('SHIFTClient', () => {
         .query(queryObject)
         .reply(200, productResponse)
 
-      return SHIFTClient.getProductByIdV1(172, queryObject)
+      return SHIFTClient.getProductV1(172, queryObject)
         .then(response => {
           expect(response.status).toEqual(200)
           expect(response.data).toEqual(productResponseParsed)
@@ -418,7 +418,7 @@ describe('SHIFTClient', () => {
 
       expect.assertions(2)
 
-      return SHIFTClient.getProductByIdV1(20000, queryObject)
+      return SHIFTClient.getProductV1(20000, queryObject)
         .catch(error => {
           expect(error).toEqual(new Error('Request failed with status code 404'))
           expect(error.response.data.errors[0].title).toEqual('Record not found')
@@ -474,13 +474,13 @@ describe('SHIFTClient', () => {
     })
   })
 
-  describe('getCategoryByIdV1', () => {
+  describe('getCategoryV1', () => {
     it('returns a category when given a correct id', () => {
       nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/category_trees/reference:web/categories/56`)
         .reply(200, categoryResponse)
 
-      return SHIFTClient.getCategoryByIdV1(56)
+      return SHIFTClient.getCategoryV1(56)
         .then(response => {
           expect(response.status).toEqual(200)
           expect(response.data).toEqual(categoryResponseParsed)
@@ -506,7 +506,7 @@ describe('SHIFTClient', () => {
 
       expect.assertions(3)
 
-      return SHIFTClient.getCategoryByIdV1(1)
+      return SHIFTClient.getCategoryV1(1)
         .catch(error => {
           expect(error).toEqual(new Error('Request failed with status code 404'))
           expect(error.response.data.errors[0].title).toEqual('Record not found')

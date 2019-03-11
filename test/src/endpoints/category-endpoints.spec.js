@@ -1,4 +1,4 @@
-const { getCategoryByIdV1 } = require('../../../src/endpoints/category-endpoints')
+const { getCategoryV1 } = require('../../../src/endpoints/category-endpoints')
 const nock = require('nock')
 const axios = require('axios')
 const httpAdapter = require('axios/lib/adapters/http')
@@ -18,13 +18,13 @@ beforeEach(() => {
 
 afterEach(() => { nock.cleanAll() })
 
-describe('getCategoryByIdV1', () => {
+describe('getCategoryV1', () => {
   it('returns a category when given a correct id', () => {
     nock(shiftApiConfig.get().apiHost)
       .get(`/${shiftApiConfig.get().apiTenant}/v1/category_trees/reference:web/categories/56`)
       .reply(200, categoryResponse)
 
-    return getCategoryByIdV1(56)
+    return getCategoryV1(56)
       .then(response => {
         expect(response.status).toEqual(200)
         expect(response.data).toEqual(categoryResponse)
@@ -50,7 +50,7 @@ describe('getCategoryByIdV1', () => {
 
     expect.assertions(3)
 
-    return getCategoryByIdV1(1)
+    return getCategoryV1(1)
       .catch(error => {
         expect(error).toEqual(new Error('Request failed with status code 404'))
         expect(error.response.data.errors[0].title).toEqual('Record not found')
