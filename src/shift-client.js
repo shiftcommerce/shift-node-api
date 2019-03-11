@@ -1,13 +1,17 @@
-const HTTPClient = require('./http-client')
-const ApiParser = require('../lib/json-api-parser')
+const ApiParser = require('./lib/json-api-parser')
+
+// Endpoints
+const menuEndpoints = require('./endpoints/menu-endpoints')
+const cartEndpoints = require('./endpoints/cart-endpoints')
+const slugEndpoints = require('./endpoints/slug-endpoints')
+const productEndpoints = require('./endpoints/product-endpoints')
+const staticPageEndpoints = require('./endpoints/static-page-endpoints')
+const categoryEndpoints = require('./endpoints/category-endpoints')
+const accountEndpoints = require('./endpoints/account-endpoints')
 
 class SHIFTClient {
-  config (config) {
-    // TODO: implement when we allow people to define a config for http client
-  }
-
   getMenusV1 (query) {
-    return HTTPClient.get('v1/menus', query)
+    return menuEndpoints.getMenusV1(query)
       .then(response => {
         const parsedPayload = new ApiParser().parse(response.data)
         return {
@@ -18,44 +22,22 @@ class SHIFTClient {
   }
 
   getCartV1 (cartId) {
-    return HTTPClient.get(`v1/carts/${cartId}`).then(this.determineResponse)
+    return cartEndpoints.getCartV1(cartId)
+      .then(this.determineResponse)
   }
 
   addLineItemToCartV1 (req, res, cartId) {
-    const payload = {
-      data: {
-        type: 'line_items',
-        attributes: {
-          cart_id: cartId,
-          item_id: req.body.variantId,
-          unit_quantity: req.body.quantity,
-          item_type: 'Variant'
-        }
-      }
-    }
-    return HTTPClient.post(`v1/carts/${cartId}/line_items`, payload)
+    return cartEndpoints.addLineItemToCartV1(req, res, cartId)
       .then(() => this.getCartV1(cartId))
   }
 
   createNewCartWithLineItemV1 (req, res) {
-    const payload = {
-      data: {
-        type: 'carts',
-        attributes: {
-          initial_line_items: [{
-            variant_id: req.body.variantId,
-            unit_quantity: req.body.quantity
-          }]
-        }
-      }
-    }
-
-    return HTTPClient.post(`v1/carts`, payload)
+    return cartEndpoints.createNewCartWithLineItemV1(req, res)
       .then(response => {
         if (req.session.customerId) {
           return this.assignCartToCustomerV1(response.data.data.id, req.session.customerId)
         }
-        return this.determineResponse(response)
+        return response
       }).then(response => {
         this.createCartCookie(res, response)
         return response
@@ -63,130 +45,51 @@ class SHIFTClient {
   }
 
   assignCartToCustomerV1 (cartId, customerId) {
-    const payload = {
-      data: {
-        type: 'carts',
-        attributes: {
-          customer_account_id: customerId
-        }
-      }
-    }
-
-    return HTTPClient.patch(`v1/carts/${cartId}`, payload).then(this.determineResponse)
+    return cartEndpoints.assignCartToCustomerV1(cartId, customerId)
+      .then(this.determineResponse)
   }
 
   deleteLineItemV1 (lineItemId, cartId) {
-    const payload = {
-      data: {
-        type: 'line_items',
-        attributes: {
-          id: lineItemId
-        }
-      }
-    }
-
-    return HTTPClient.delete(`v1/carts/${cartId}/line_items/${lineItemId}`, payload).then(() => this.getCartV1(cartId))
+    return cartEndpoints.deleteLineItemV1(lineItemId, cartId)
+      .then(() => this.getCartV1(cartId))
   }
 
   updateLineItemV1 (newQuantity, cartId, lineItemId) {
-    const payload = {
-      data: {
-        type: 'line_items',
-        attributes: {
-          unit_quantity: newQuantity
-        }
-      }
-    }
-
-    return HTTPClient.patch(`v1/carts/${cartId}/line_items/${lineItemId}`, payload)
+    return cartEndpoints.updateLineItemV1(newQuantity, cartId, lineItemId)
       .then(() => this.getCartV1(cartId))
   }
 
   addCartCouponV1 (couponCode, cartId) {
-    const payload = {
-      data: {
-        type: 'coupons',
-        attributes: {
-          coupon_code: couponCode
-        }
-      }
-    }
-
-    return HTTPClient.post(`v1/carts/${cartId}/coupons`, payload).then(this.determineResponse)
+    return cartEndpoints.addCartCouponV1(couponCode, cartId)
+      .then(this.determineResponse)
   }
 
   setCartShippingMethodV1 (cartId, shippingMethodId) {
-    const payload = {
-      data: {
-        type: 'carts',
-        attributes: {
-          shipping_method_id: shippingMethodId
-        }
-      }
-    }
-
-    return HTTPClient.patch(`v1/carts/${cartId}`, payload).then(this.determineResponse)
+    return cartEndpoints.setCartShippingMethodV1(cartId, shippingMethodId)
+      .then(this.determineResponse)
   }
 
   getShippingMethodsV1 () {
-    return HTTPClient.get('v1/shipping_methods').then(this.determineResponse)
+    return cartEndpoints.getShippingMethodsV1()
+      .then(this.determineResponse)
   }
 
   createCustomerAddressV1 (req) {
-    const payload = {
-      data: {
-        type: 'addresses',
-        attributes: {
-          first_name: req.body.first_name,
-          last_name: req.body.last_name,
-          address_line_1: req.body.line_1,
-          address_line_2: req.body.line_2,
-          city: req.body.city,
-          country: req.body.country_code,
-          postcode: req.body.zipcode,
-          meta_attributes: {
-            email: {
-              value: req.body.email
-            },
-            phone_number: {
-              value: req.body.primary_phone
-            }
-          }
-        }
-      }
-    }
-
-    return HTTPClient.post('v1/addresses', payload).then(this.determineResponse)
+    return cartEndpoints.createCustomerAddressV1(req)
+      .then(this.determineResponse)
   }
 
   setCartBillingAddressV1 (addressId, cartId) {
-    const payload = {
-      data: {
-        type: 'carts',
-        attributes: {
-          billing_address_id: addressId
-        }
-      }
-    }
-
-    return HTTPClient.patch(`v1/carts/${cartId}`, payload).then(this.determineResponse)
+    return cartEndpoints.setCartBillingAddressV1(addressId, cartId)
+      .then(this.determineResponse)
   }
 
   setCartShippingAddressV1 (addressId, cartId) {
-    const payload = {
-      data: {
-        type: 'carts',
-        attributes: {
-          shipping_address_id: addressId
-        }
-      }
-    }
-
-    return HTTPClient.patch(`v1/carts/${cartId}`, payload).then(this.determineResponse)
+    return cartEndpoints.setCartShippingAddressV1(addressId, cartId)
   }
 
-  getSlugDataV1 (queryObject) {
-    return HTTPClient.get(`v1/slugs`, queryObject)
+  getResourceBySlugV1 (queryObject) {
+    return slugEndpoints.getResourceBySlugV1(queryObject)
       .then(response => {
         const parsedPayload = new ApiParser().parse(response.data)
         return {
@@ -196,66 +99,49 @@ class SHIFTClient {
       })
   }
 
-  getProductByIdV1 (id, query) {
-    return HTTPClient.get(`v1/products/${id}`, query).then(this.determineResponse)
+  getProductV1 (id, query) {
+    return productEndpoints.getProductV1(id, query)
+      .then(this.determineResponse)
   }
 
   getStaticPageV1 (id, query) {
-    return HTTPClient.get(`v1/static_pages/${id}`, query).then(this.determineResponse)
+    return staticPageEndpoints.getStaticPageV1(id, query)
+      .then(this.determineResponse)
   }
 
-  getCategoryByIdV1 (id) {
-    return HTTPClient.get(`v1/category_trees/reference:web/categories/${id}`).then(this.determineResponse)
+  getCategoryV1 (id) {
+    return categoryEndpoints.getCategoryV1(id)
+      .then(this.determineResponse)
   }
 
   getAccountV1 (queryObject, customerId) {
-    return HTTPClient.get(`v1/customer_accounts/${customerId}`, queryObject).then(response => {
-      return {
-        status: response.status,
-        data: response.data
-      }
-    })
+    return accountEndpoints.getAccountV1(queryObject, customerId)
   }
 
   createCustomerAccountV1 (account) {
-    return HTTPClient.post('v1/customer_accounts', account).then(response => {
-      return {
-        status: response.status,
-        data: response.data
-      }
-    })
+    return accountEndpoints.createCustomerAccountV1(account)
   }
 
   loginCustomerAccountV1 (account) {
-    return HTTPClient.post('v1/customer_account_authentications', account).then(response => {
-      return {
-        status: response.status,
-        data: response.data
-      }
-    })
+    return accountEndpoints.loginCustomerAccountV1(account)
   }
 
   getCustomerOrdersV1 (query) {
-    return HTTPClient.get('https://shift-oms-dev.herokuapp.com/oms/v1/customer_orders', query).then(response => {
-      return {
-        status: response.status,
-        data: response.data
-      }
-    })
+    return accountEndpoints.getCustomerOrdersV1(query)
   }
 
   getAddressBookV1 (customerAccountId) {
-    return HTTPClient.get(`v1/customer_accounts/${customerAccountId}/addresses`)
+    return accountEndpoints.getAddressBookV1(customerAccountId)
       .then(this.determineResponse)
   }
 
   createAddressBookEntryV1 (body, customerAccountId) {
-    return HTTPClient.post(`v1/customer_accounts/${customerAccountId}/addresses`, body)
+    return accountEndpoints.createAddressBookEntryV1(body, customerAccountId)
       .then(this.determineResponse)
   }
 
   deleteAddressV1 (addressId, customerAccountId) {
-    return HTTPClient.delete(`v1/customer_accounts/${customerAccountId}/addresses/${addressId}`)
+    return accountEndpoints.deleteAddressV1(addressId, customerAccountId)
       .then(this.determineResponse)
   }
 

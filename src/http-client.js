@@ -1,5 +1,6 @@
 const axios = require('axios')
 const qs = require('qs')
+const { shiftApiConfig } = require('./index')
 
 const headers = {
   'Content-Type': 'application/vnd.api+json',
@@ -7,19 +8,6 @@ const headers = {
 }
 
 class HTTPClient {
-  constructor () {
-    this.tenant = process.env.API_TENANT
-    this.apiHost = process.env.API_HOST
-    this.apiKey = process.env.API_ACCESS_TOKEN
-    this.auth = {
-      username: process.env.API_TENANT,
-      password: process.env.API_ACCESS_TOKEN
-    }
-  }
-
-  config (config) {
-  }
-
   get (url, queryObject) {
     const query = qs.stringify(queryObject)
     const requestUrl = this.createRequestUrl(url, query)
@@ -28,7 +16,10 @@ class HTTPClient {
       method: 'get',
       url: requestUrl,
       headers: headers,
-      auth: this.auth
+      auth: {
+        username: shiftApiConfig.get().apiTenant,
+        password: shiftApiConfig.get().apiAccessToken
+      }
     })
 
     return this.determineResponse(response)
@@ -41,7 +32,10 @@ class HTTPClient {
       method: 'post',
       url: requestUrl,
       headers: headers,
-      auth: this.auth,
+      auth: {
+        username: shiftApiConfig.get().apiTenant,
+        password: shiftApiConfig.get().apiAccessToken
+      },
       data: body
     })
 
@@ -55,7 +49,10 @@ class HTTPClient {
       method: 'patch',
       url: requestUrl,
       headers: headers,
-      auth: this.auth,
+      auth: {
+        username: shiftApiConfig.get().apiTenant,
+        password: shiftApiConfig.get().apiAccessToken
+      },
       data: body
     })
 
@@ -69,7 +66,10 @@ class HTTPClient {
       method: 'delete',
       url: requestUrl,
       headers: headers,
-      auth: this.auth
+      auth: {
+        username: shiftApiConfig.get().apiTenant,
+        password: shiftApiConfig.get().apiAccessToken
+      }
     })
 
     return this.determineResponse(response)
@@ -82,12 +82,12 @@ class HTTPClient {
     const regex = /shift-oms-dev/i
 
     if (!query) {
-      requestUrl = `${this.apiHost}/${this.tenant}/${url}`
+      requestUrl = `${shiftApiConfig.get().apiHost}/${shiftApiConfig.get().apiTenant}/${url}`
     } else if (regex.test(url)) {
       // TODO: remove this statement when platform proxy is live
       requestUrl = `${url}/?${query}`
     } else {
-      requestUrl = `${this.apiHost}/${this.tenant}/${url}?${query}`
+      requestUrl = `${shiftApiConfig.get().apiHost}/${shiftApiConfig.get().apiTenant}/${url}?${query}`
     }
 
     return requestUrl
