@@ -1,6 +1,6 @@
 const axios = require('axios')
 const qs = require('qs')
-const { shiftApiConfig } = require('./index')
+const shiftApiConfig = require('./lib/config')
 
 const headers = {
   'Content-Type': 'application/vnd.api+json',
