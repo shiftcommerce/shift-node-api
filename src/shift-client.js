@@ -1,17 +1,17 @@
 const ApiParser = require('./lib/json-api-parser')
 
 // Endpoints
-const menuEndpoint = require('./endpoints/menu-endpoint')
+const menuEndpoints = require('./endpoints/menu-endpoints')
 const cartEndpoints = require('./endpoints/cart-endpoints')
-const slugEndpoint = require('./endpoints/slug-endpoint')
-const productEndpoint = require('./endpoints/product-endpoint')
-const staticPageEndpoint = require('./endpoints/static-page-endpoint')
-const categoryEndpoint = require('./endpoints/category-endpoint')
+const slugEndpoints = require('./endpoints/slug-endpoints')
+const productEndpoints = require('./endpoints/product-endpoints')
+const staticPageEndpoints = require('./endpoints/static-page-endpoints')
+const categoryEndpoints = require('./endpoints/category-endpoints')
 const accountEndpoints = require('./endpoints/account-endpoints')
 
 class SHIFTClient {
   getMenusV1 (query) {
-    return menuEndpoint.getMenusV1(query)
+    return menuEndpoints.getMenusV1(query)
       .then(response => {
         const parsedPayload = new ApiParser().parse(response.data)
         return {
@@ -89,7 +89,7 @@ class SHIFTClient {
   }
 
   getSlugDataV1 (queryObject) {
-    return slugEndpoint.getSlugDataV1(queryObject)
+    return slugEndpoints.getSlugDataV1(queryObject)
       .then(response => {
         const parsedPayload = new ApiParser().parse(response.data)
         return {
@@ -100,17 +100,17 @@ class SHIFTClient {
   }
 
   getProductByIdV1 (id, query) {
-    return productEndpoint.getProductByIdV1(id, query)
+    return productEndpoints.getProductByIdV1(id, query)
       .then(this.determineResponse)
   }
 
   getStaticPageV1 (id, query) {
-    return staticPageEndpoint.getStaticPageV1(id, query)
+    return staticPageEndpoints.getStaticPageV1(id, query)
       .then(this.determineResponse)
   }
 
   getCategoryByIdV1 (id) {
-    return categoryEndpoint.getCategoryByIdV1(id)
+    return categoryEndpoints.getCategoryByIdV1(id)
       .then(this.determineResponse)
   }
 
