@@ -1,6 +1,6 @@
 const HTTPClient = require('../http-client')
 
-function getAccountV1(queryObject, customerId) {
+function getAccountV1 (queryObject, customerId) {
   return HTTPClient.get(`v1/customer_accounts/${customerId}`, queryObject).then(response => {
     return {
       status: response.status,
@@ -9,7 +9,7 @@ function getAccountV1(queryObject, customerId) {
   })
 }
 
-function createCustomerAccountV1(account) {
+function createCustomerAccountV1 (account) {
   return HTTPClient.post('v1/customer_accounts', account).then(response => {
     return {
       status: response.status,
@@ -18,7 +18,7 @@ function createCustomerAccountV1(account) {
   })
 }
 
-function loginCustomerAccountV1(account) {
+function loginCustomerAccountV1 (account) {
   return HTTPClient.post('v1/customer_account_authentications', account).then(response => {
     return {
       status: response.status,
@@ -27,7 +27,7 @@ function loginCustomerAccountV1(account) {
   })
 }
 
-function getCustomerOrdersV1(query) {
+function getCustomerOrdersV1 (query) {
   return HTTPClient.get('https://shift-oms-dev.herokuapp.com/oms/v1/customer_orders', query).then(response => {
     return {
       status: response.status,
@@ -36,16 +36,37 @@ function getCustomerOrdersV1(query) {
   })
 }
 
-function getAddressBookV1(customerAccountId) {
+function getAddressBookV1 (customerAccountId) {
   return HTTPClient.get(`v1/customer_accounts/${customerAccountId}/addresses`)
 }
 
-function createAddressBookEntryV1(body, customerAccountId) {
+function createAddressBookEntryV1 (body, customerAccountId) {
   return HTTPClient.post(`v1/customer_accounts/${customerAccountId}/addresses`, body)
 }
 
-function deleteAddressV1(addressId, customerAccountId) {
+function deleteAddressV1 (addressId, customerAccountId) {
   return HTTPClient.delete(`v1/customer_accounts/${customerAccountId}/addresses/${addressId}`)
+}
+
+function getCustomerAccountByEmailV1 (customerAccountEmail) {
+  return HTTPClient.get(`v1/customer_accounts/email:${customerAccountEmail}`)
+    .then(this.determineResponse)
+}
+
+function createPasswordRecoveryV1 (customerAccountId, data) {
+  return HTTPClient.post(`v1/customer_accounts/${customerAccountId}/password_recovery`, data)
+    .then(this.determineResponse)
+}
+
+function getCustomerAccountByTokenV1 (token) {
+  return HTTPClient.get(`v1/customer_accounts/token:${token}`)
+    .then(this.determineResponse)
+}
+
+function updateCustomerAccountPasswordV1 (customerAccountId, body) {
+  console.log({ body })
+  return HTTPClient.patch(`v1/customer_accounts/${customerAccountId}/password_recovery`, body)
+    .then(this.determineResponse)
 }
 
 module.exports = {
@@ -55,5 +76,9 @@ module.exports = {
   getCustomerOrdersV1,
   getAddressBookV1,
   createAddressBookEntryV1,
-  deleteAddressV1
+  deleteAddressV1,
+  getCustomerAccountByEmailV1,
+  createPasswordRecoveryV1,
+  getCustomerAccountByTokenV1,
+  updateCustomerAccountPasswordV1
 }

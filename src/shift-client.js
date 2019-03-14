@@ -145,6 +145,29 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
+  // Forgotten password \/\/\/\/
+  getCustomerAccountByEmailV1 (email) {
+    return accountEndpoints.getCustomerAccountByEmailV1(email)
+      .then(this.determineResponse)
+  }
+
+  createPasswordRecoveryV1 (accountId, data) {
+    return accountEndpoints.createPasswordRecoveryV1(accountId, data)
+      .then(this.determineResponse)
+  }
+
+  getCustomerAccountByTokenV1 (token) {
+    return accountEndpoints.getCustomerAccountByTokenV1(token)
+      .then(this.determineResponse)
+  }
+
+  updateCustomerAccountPasswordV1 (accountId, body) {
+    return accountEndpoints.updateCustomerAccountPasswordV1(accountId, body)
+      .then(this.determineResponse)
+  }
+
+  // Forgotten password /\/\/\/\
+
   determineResponse (response) {
     const parsedPayload = new ApiParser().parse(response.data)
     // Fallback if parser returns undefined
