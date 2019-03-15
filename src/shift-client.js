@@ -8,6 +8,7 @@ const productEndpoints = require('./endpoints/product-endpoints')
 const staticPageEndpoints = require('./endpoints/static-page-endpoints')
 const categoryEndpoints = require('./endpoints/category-endpoints')
 const accountEndpoints = require('./endpoints/account-endpoints')
+const orderEndpoints = require('./endpoints/order-endpoints')
 
 class SHIFTClient {
   getMenusV1 (query) {
@@ -143,6 +144,10 @@ class SHIFTClient {
   deleteAddressV1 (addressId, customerAccountId) {
     return accountEndpoints.deleteAddressV1(addressId, customerAccountId)
       .then(this.determineResponse)
+  }
+
+  createOrderV1(orderPayload) {
+    return orderEndpoints.createOrderV1(orderPayload).then(this.determineResponse)
   }
 
   determineResponse (response) {

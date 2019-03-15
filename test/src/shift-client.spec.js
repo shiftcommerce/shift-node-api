@@ -23,6 +23,8 @@ const productResponse = require('../fixtures/product-response-payload')
 const productResponseParsed = require('../fixtures/product-response-parsed')
 const createAddressBookResponse = require('../fixtures/create-addressbook-response')
 const createAddressBookResponseParsed = require('../fixtures/create-addressbook-response-parsed')
+const createOrderResponse = require('../fixtures/create-order-response')
+const createOrderResponseParsed = require('../fixtures/create-order-response-parsed')
 
 beforeEach(() => {
   shiftApiConfig.set({
@@ -35,7 +37,7 @@ afterEach(() => { nock.cleanAll() })
 
 describe('SHIFTClient', () => {
   describe('getMenusV1()', () => {
-    it('should return a parsed response', () => {
+    test('should return a parsed response', () => {
       const query = {
         fields: {
           menu_items: 'title,slug,menu_items,item,background_image_link,background_image,published,canonical_path,meta_attributes',
@@ -65,7 +67,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('getCartV1()', () => {
-    it('should return a parsed response', () => {
+    test('should return a parsed response', () => {
       const cartId = '35'
 
       nock(shiftApiConfig.get().apiHost)
@@ -81,7 +83,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('addLineItemToCartV1()', () => {
-    it('should add lineitem to existing cart then call getCartV1()', () => {
+    test('should add lineitem to existing cart then call getCartV1()', () => {
       const cartId = '35'
       const req = {
         body: {
@@ -108,7 +110,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('createNewCartWithLineItemV1()', () => {
-    it('should create a new cart with LineItem then assigns cart to customer if customer id is present', () => {
+    test('should create a new cart with LineItem then assigns cart to customer if customer id is present', () => {
       const req = {
         signedCookies: {},
         session: {
@@ -146,7 +148,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('assignCartToCustomerV1()', () => {
-    it('assigns cart to customer then returns a parsed response', () => {
+    test('assigns cart to customer then returns a parsed response', () => {
       const cartId = '35'
       const customerId = '1'
 
@@ -163,7 +165,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('deleteLineItemV1()', () => {
-    it('updates lineItem quantity to existing cart, then calls getCartV1()', () => {
+    test('updates lineItem quantity to existing cart, then calls getCartV1()', () => {
       const cartId = '14'
       const lineItemId = '1'
 
@@ -188,7 +190,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('updateLineItemV1()', () => {
-    it('updates lineItem quantity to existing cart, then calls getCart()', () => {
+    test('updates lineItem quantity to existing cart, then calls getCart()', () => {
       const cartId = '14'
       const lineItemId = '1'
       const newQuantity = 2
@@ -212,7 +214,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('addCartCouponV1()', () => {
-    it('adds a coupon to cart when coupon code is valid then returns a parsed response', () => {
+    test('adds a coupon to cart when coupon code is valid then returns a parsed response', () => {
       const cartId = '17'
       const couponCode = 'ABC-DISCOUNT-XYZ'
 
@@ -229,7 +231,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('setCartShippingMethodV1()', () => {
-    it('updates the cart with a shipping address id', () => {
+    test('updates the cart with a shipping address id', () => {
       const cartId = '14'
       const shippingMethodId = '12'
 
@@ -247,7 +249,7 @@ describe('SHIFTClient', () => {
   })
   
   describe('getShippingMethodsV1()', () => {
-    it('returns shipping methods', () => {
+    test('returns shipping methods', () => {
       nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/shipping_methods`)
         .reply(201, { shipping_methods: 'shipping_methods_data' })
@@ -261,7 +263,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('createCustomerAddressV1()', () => {
-    it('creates a new address', () => {
+    test('creates a new address', () => {
       const req = {
         body: {
           first_name: 'First name',
@@ -287,7 +289,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('setCartBillingAddressV1()', () => {
-    it('should return a parsed response', () => {
+    test('should return a parsed response', () => {
       const cartId = '35'
       const addressId = '12'
 
@@ -304,7 +306,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('setCartShippingAddressV1()', () => {
-    it('should return a parsed response', () => {
+    test('should return a parsed response', () => {
       const cartId = '35'
       const addressId = '12'
 
@@ -321,7 +323,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('getResourceBySlugV1', () => {
-    it('endpoint returns a slug', () => {
+    test('endpoint returns a slug', () => {
       const queryObject = {
         filter: {
           path: 'coffee'
@@ -347,7 +349,7 @@ describe('SHIFTClient', () => {
         })
     })
 
-    it('endpoint errors with incorrect data and returns console.log', () => {
+    test('endpoint errors with incorrect data and returns console.log', () => {
       const queryObject = {
         filter: {
           path: 'incorrectslug'
@@ -375,7 +377,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('getProductV1', () => {
-    it('returns a product when given a correct id', () => {
+    test('returns a product when given a correct id', () => {
       const queryObject = {
         include: 'asset_files,variants,bundles,bundles.asset_files,template,meta.*',
         fields: { asset_files: 'image_height,image_width,s3_url' }
@@ -393,7 +395,7 @@ describe('SHIFTClient', () => {
         })
     })
 
-    it('returns an error with incorrect id', () => {
+    test('returns an error with incorrect id', () => {
       const queryObject = {
         include: 'asset_files,variants,bundles,bundles.asset_files,template,meta.*',
         fields: { asset_files: 'image_height,image_width,s3_url' }
@@ -427,7 +429,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('getStaticPagesV1', () => {
-    it('endpoint returns a static page', () => {
+    test('endpoint returns a static page', () => {
       const queryObject = {
         include: 'template,meta.*'
       }
@@ -444,7 +446,7 @@ describe('SHIFTClient', () => {
         })
     })
 
-    it('endpoint returns an error with incorrect id', () => {
+    test('endpoint returns an error with incorrect id', () => {
       const queryObject = {
         include: 'template,meta.*'
       }
@@ -475,7 +477,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('getCategoryV1', () => {
-    it('returns a category when given a correct id', () => {
+    test('returns a category when given a correct id', () => {
       nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/category_trees/reference:web/categories/56`)
         .reply(200, categoryResponse)
@@ -487,7 +489,7 @@ describe('SHIFTClient', () => {
         })
     })
 
-    it('endpoint errors with incorrect id and returns console.log', () => {
+    test('endpoint errors with incorrect id and returns console.log', () => {
       nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/category_trees/reference:web/categories/1`)
         .reply(404, {
@@ -516,7 +518,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('getAccountV1', () => {
-    it('gets an account if there is a customer id', () => {
+    test('gets an account if there is a customer id', () => {
       const customerId = 10
       const queryObject = {
         fields: {
@@ -546,7 +548,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('createCustomerAccountV1', () => {
-    it('allows you to create an account with a correct payload', () => {
+    test('allows you to create an account with a correct payload', () => {
       const body = {
         'data': {
           'type': 'customer_accounts',
@@ -571,7 +573,7 @@ describe('SHIFTClient', () => {
         })
     })
 
-    it('errors if account already exists', () => {
+    test('errors if account already exists', () => {
       const body = {
         data: {
           type: 'customer_accounts',
@@ -601,7 +603,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('loginCustomerAccountV1', () => {
-    it('allows you to login to an account with a correct payload', () => {
+    test('allows you to login to an account with a correct payload', () => {
       const body = {
         data: {
           type: 'customer_account_authentications',
@@ -623,7 +625,7 @@ describe('SHIFTClient', () => {
         })
     })
 
-    it('errors if account doesnt exist', () => {
+    test('errors if account doesnt exist', () => {
       const body = {
         data: {
           type: 'customer_account_authentications',
@@ -662,7 +664,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('getCustomerOrdersV1', () => {
-    it('gets customer orders from oms', () => {
+    test('gets customer orders from oms', () => {
       const query = {
         filter: {
           account_reference: shiftApiConfig.get().apiTenant,
@@ -690,7 +692,7 @@ describe('SHIFTClient', () => {
         })
     })
 
-    it('should return errors if no customer_reference is present', () => {
+    test('should return errors if no customer_reference is present', () => {
       const query = {
         fields: {
           customer_orders: 'account_reference,reference,placed_at,line_items,pricing,shipping_methods,shipping_addresses,discounts',
@@ -725,7 +727,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('getAddressBookV1', () => {
-    it('endpoint returns address book with correct id', () => {
+    test('endpoint returns address book with correct id', () => {
       nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77/addresses`)
         .reply(200, addressBookResponse)
@@ -737,7 +739,7 @@ describe('SHIFTClient', () => {
         })
     })
 
-    it('endpoint returns an empty array with an id that has no addresses or is invalid', () => {
+    test('endpoint returns an empty array with an id that has no addresses or is invalid', () => {
       const addressBookWrongIdResponse = {
         'data': [],
         'meta': {
@@ -778,7 +780,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('createAddressBookEntryV1', () => {
-    it('saves an address to the address book', () => {
+    test('saves an address to the address book', () => {
       const body = {
         'id': '45',
         'type': 'addresses',
@@ -824,7 +826,7 @@ describe('SHIFTClient', () => {
         })
     })
 
-    it('returns an error with a missing field', () => {
+    test('returns an error with a missing field', () => {
       const body = {
         'id': '45',
         'type': 'addresses',
@@ -898,7 +900,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('deleteAddressV1', () => {
-    it('deletes an address from the address book', () => {
+    test('deletes an address from the address book', () => {
       nock(shiftApiConfig.get().apiHost)
         .delete(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77/addresses/434`)
         .reply(204)
@@ -909,7 +911,7 @@ describe('SHIFTClient', () => {
         })
     })
 
-    it('returns a 404 and logs it to the console if address being deleted does not exist', () => {
+    test('returns a 404 and logs it to the console if address being deleted does not exist', () => {
       nock(shiftApiConfig.get().apiHost)
         .delete(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77/addresses/123123123`)
         .reply(404)
@@ -919,6 +921,42 @@ describe('SHIFTClient', () => {
       return SHIFTClient.deleteAddressV1(123123123, 77)
         .catch(error => {
           expect(error).toEqual(new Error('Request failed with status code 404'))
+        })
+    })
+  })
+
+  describe('createOrderV1', () => {
+    test('creates an order with valid data', () => {
+      const body = {
+        data: {
+          type: 'create_order',
+          attributes: {
+            billing_address: {},
+            channel: 'web',
+            currency: 'GBP',
+            email: 'guest@order.com',
+            ip_address: '1.1.1.1',
+            line_items_resources: [],
+            shipping_address: {},
+            shipping_method: {},
+            discount_summaries: [],
+            sub_total: 19.45,
+            total: 19.45,
+            placed_at: '2018-10-31T14:37:34.113Z',
+            payment_transactions_resources: []
+          }
+        }
+      }
+
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v2/create_order`, body)
+        .query(true)
+        .reply(201, createOrderResponse)
+
+      return SHIFTClient.createOrderV1(body)
+        .then(response => {
+          expect(response.status).toEqual(201)
+          expect(response.data).toEqual(createOrderResponseParsed)
         })
     })
   })

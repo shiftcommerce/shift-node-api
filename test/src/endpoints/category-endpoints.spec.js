@@ -19,7 +19,7 @@ beforeEach(() => {
 afterEach(() => { nock.cleanAll() })
 
 describe('getCategoryV1', () => {
-  it('returns a category when given a correct id', () => {
+  test('returns a category when given a correct id', () => {
     nock(shiftApiConfig.get().apiHost)
       .get(`/${shiftApiConfig.get().apiTenant}/v1/category_trees/reference:web/categories/56`)
       .reply(200, categoryResponse)
@@ -31,7 +31,7 @@ describe('getCategoryV1', () => {
       })
   })
 
-  it('endpoint errors with incorrect id and returns console.log', () => {
+  test('endpoint errors with incorrect id and returns console.log', () => {
     nock(shiftApiConfig.get().apiHost)
       .get(`/${shiftApiConfig.get().apiTenant}/v1/category_trees/reference:web/categories/1`)
       .reply(404, {

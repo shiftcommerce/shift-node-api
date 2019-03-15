@@ -19,7 +19,7 @@ beforeEach(() => {
 afterEach(() => { nock.cleanAll() })
 
 describe('getProductV1', () => {
-  it('returns a product when given a correct id', () => {
+  test('returns a product when given a correct id', () => {
     const queryObject = {
       include: 'asset_files,variants,bundles,bundles.asset_files,template,meta.*',
       fields: { asset_files: 'image_height,image_width,s3_url' }
@@ -37,7 +37,7 @@ describe('getProductV1', () => {
       })
   })
 
-  it('returns an error with incorrect id', () => {
+  test('returns an error with incorrect id', () => {
     const queryObject = {
       include: 'asset_files,variants,bundles,bundles.asset_files,template,meta.*',
       fields: { asset_files: 'image_height,image_width,s3_url' }
