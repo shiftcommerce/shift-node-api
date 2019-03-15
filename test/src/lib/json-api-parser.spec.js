@@ -6,7 +6,7 @@ const productsPayload = require('../../fixtures/products-payload')
 const productPayload = require('../../fixtures/product-payload')
 
 describe('JsonApiParser', () => {
-  it('it parses a JSON API resource collection correctly', () => {
+  test('it parses a JSON API resource collection correctly', () => {
     // Arrange
     const payloadData = productsPayload.data
     const payloadLinks = productsPayload.links
@@ -42,7 +42,7 @@ describe('JsonApiParser', () => {
     })
   })
 
-  it('it parses a JSON API resource correctly', () => {
+  test('it parses a JSON API resource correctly', () => {
     // Arrange & Act
     const payloadResourceData = productPayload.data
     const parsedResource = new JsonApiParser().parse(productPayload)

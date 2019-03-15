@@ -19,7 +19,7 @@ beforeEach(() => {
 afterEach(() => { nock.cleanAll() })
 
 describe('getMenusV1', () => {
-  it('returns a correct response with a valid query', () => {
+  test('returns a correct response with a valid query', () => {
     const query = {
       fields: {
         menu_items: 'title,slug,menu_items,item,background_image_link,background_image,published,canonical_path,meta_attributes',
@@ -47,7 +47,7 @@ describe('getMenusV1', () => {
       })
   })
 
-  it('returns an error when called with an invalid query', () => {
+  test('returns an error when called with an invalid query', () => {
     const query = {
       fields: {
         menu_items: 'title,slug,menu_items,item,background_image_link,background_image,published,canonical_path,meta_attributes',

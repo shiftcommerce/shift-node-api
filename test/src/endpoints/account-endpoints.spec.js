@@ -30,7 +30,7 @@ beforeEach(() => {
 afterEach(() => { nock.cleanAll() })
 
 describe('getAccountV1', () => {
-  it('gets an account if there is a customer id', () => {
+  test('gets an account if there is a customer id', () => {
     const customerId = 10
     const queryObject = {
       fields: {
@@ -60,7 +60,7 @@ describe('getAccountV1', () => {
 })
 
 describe('getCustomerOrdersV1', () => {
-  it('gets customer orders from oms', () => {
+  test('gets customer orders from oms', () => {
     const query = {
       filter: {
         account_reference: shiftApiConfig.get().apiTenant,
@@ -88,7 +88,7 @@ describe('getCustomerOrdersV1', () => {
       })
   })
 
-  it('should return errors if no customer_reference is present', () => {
+  test('should return errors if no customer_reference is present', () => {
     const query = {
       fields: {
         customer_orders: 'account_reference,reference,placed_at,line_items,pricing,shipping_methods,shipping_addresses,discounts',
@@ -123,7 +123,7 @@ describe('getCustomerOrdersV1', () => {
 })
 
 describe('getAddressBookV1', () => {
-  it('endpoint returns address book with correct id', () => {
+  test('endpoint returns address book with correct id', () => {
     nock(shiftApiConfig.get().apiHost)
       .get(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77/addresses`)
       .reply(200, addressBookResponse)
@@ -135,7 +135,7 @@ describe('getAddressBookV1', () => {
       })
   })
 
-  it('endpoint returns an empty array with an id that has no addresses or is invalid', () => {
+  test('endpoint returns an empty array with an id that has no addresses or is invalid', () => {
     const addressBookWrongIdResponse = {
       'data': [],
       'meta': {
@@ -162,7 +162,7 @@ describe('getAddressBookV1', () => {
 })
 
 describe('deleteAddressV1', () => {
-  it('deletes an address from the address book', () => {
+  test('deletes an address from the address book', () => {
     nock(shiftApiConfig.get().apiHost)
       .delete(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77/addresses/434`)
       .reply(204)
@@ -173,7 +173,7 @@ describe('deleteAddressV1', () => {
       })
   })
 
-  it('returns a 404 and logs it to the console if address being deleted does not exist', () => {
+  test('returns a 404 and logs it to the console if address being deleted does not exist', () => {
     nock(shiftApiConfig.get().apiHost)
       .delete(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77/addresses/123123123`)
       .reply(404)
@@ -188,7 +188,7 @@ describe('deleteAddressV1', () => {
 })
 
 describe('createAddressBookEntryV1', () => {
-  it('saves an address to the address book', () => {
+  test('saves an address to the address book', () => {
     const body = {
       'id': '45',
       'type': 'addresses',
@@ -234,7 +234,7 @@ describe('createAddressBookEntryV1', () => {
       })
   })
 
-  it('returns an error with a missing field', () => {
+  test('returns an error with a missing field', () => {
     const body = {
       'id': '45',
       'type': 'addresses',
@@ -308,7 +308,7 @@ describe('createAddressBookEntryV1', () => {
 })
 
 describe('createCustomerAccountV1', () => {
-  it('allows you to create an account with a correct payload', () => {
+  test('allows you to create an account with a correct payload', () => {
     const body = {
       'data': {
         'type': 'customer_accounts',
@@ -333,7 +333,7 @@ describe('createCustomerAccountV1', () => {
       })
   })
 
-  it('errors if account already exists', () => {
+  test('errors if account already exists', () => {
     const body = {
       data: {
         type: 'customer_accounts',
@@ -363,7 +363,7 @@ describe('createCustomerAccountV1', () => {
 })
 
 describe('loginCustomerAccountV1', () => {
-  it('allows you to login to an account with a correct payload', () => {
+  test('allows you to login to an account with a correct payload', () => {
     const body = {
       data: {
         type: 'customer_account_authentications',
@@ -385,7 +385,7 @@ describe('loginCustomerAccountV1', () => {
       })
   })
 
-  it('errors if account doesnt exist', () => {
+  test('errors if account doesnt exist', () => {
     const body = {
       data: {
         type: 'customer_account_authentications',

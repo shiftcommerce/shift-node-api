@@ -6,7 +6,7 @@ afterEach(() => {
 })
 
 describe('Config', () => {
-  it('.get().[key] should return value for key set in config', () => {
+  test('.get().[key] should return value for key set in config', () => {
     // Check that no keys are set to start off
     expect(Config.config).toEqual({})
 
@@ -19,7 +19,7 @@ describe('Config', () => {
     expect(Config.get().testKey).toEqual('iamtest')
   })
 
-  it('.reset() should reset the config and return an empty object', () => {
+  test('.reset() should reset the config and return an empty object', () => {
     // Set a key and value to config
     Config.set({
       testKey: 'iamtest'
