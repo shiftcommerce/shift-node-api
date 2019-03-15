@@ -2,6 +2,7 @@ const HTTPClient = require('../../src/http-client')
 const nock = require('nock')
 const axios = require('axios')
 const httpAdapter = require('axios/lib/adapters/http')
+const { shiftApiConfig } = require('../../src/index')
 
 // Fixtures
 const registerPayload = require('../fixtures/register-response-payload')
@@ -9,23 +10,29 @@ const staticPagePayload = require('../fixtures/staticpage-response-payload')
 
 axios.defaults.adapter = httpAdapter
 
-const httpClient = HTTPClient
-
 afterEach(() => { nock.cleanAll() })
+
+beforeEach(() => {
+  shiftApiConfig.set({
+    apiHost: 'http://example.com',
+    apiTenant: 'test_tenant'
+  })  
+})
+
 
 describe('HTTPClient', () => {
   describe('get', () => {
-    it('returns correct data', () => {
+    test('returns correct data', () => {
       const url = `v1/static_pages/56`
 
       nock(process.env.API_HOST)
         .get(`/${process.env.API_TENANT}/${url}`)
         .reply(200, staticPagePayload)
 
-      return expect(httpClient.get(url)).resolves.toEqual({ status: 200, data: staticPagePayload })
+      return expect(HTTPClient.get(url)).resolves.toEqual({ status: 200, data: staticPagePayload })
     })
 
-    it('returns error data if a bad request', () => {
+    test('returns error data if a bad request', () => {
       const url = `v1/static_pages/1001`
 
       const errors = {
@@ -43,12 +50,12 @@ describe('HTTPClient', () => {
         .get(`/${process.env.API_TENANT}/${url}`)
         .reply(404, errors)
 
-      return expect(httpClient.get(url)).rejects.toEqual(new Error('Request failed with status code 404'))
+      return expect(HTTPClient.get(url)).rejects.toEqual(new Error('Request failed with status code 404'))
     })
   })
 
   describe('post', () => {
-    it('saves and returns data', () => {
+    test('saves and returns data', () => {
       const url = 'v1/customer_accounts'
 
       const body = {
@@ -67,12 +74,12 @@ describe('HTTPClient', () => {
         .post(`/${process.env.API_TENANT}/${url}`)
         .reply(201, registerPayload)
 
-      return expect(httpClient.post(url, body)).resolves.toEqual({ status: 201, data: registerPayload })
+      return expect(HTTPClient.post(url, body)).resolves.toEqual({ status: 201, data: registerPayload })
     })
   })
 
   describe('delete', () => {
-    it('correctly returns successful responses', () => {
+    test('correctly returns successful responses', () => {
       const url = 'v1/addresses'
 
       // Mock out the delete request
@@ -81,10 +88,10 @@ describe('HTTPClient', () => {
         .reply(204)
 
       // Make the request
-      return expect(httpClient.delete(url)).resolves.toEqual({ data: '', status: 204 })
+      return expect(HTTPClient.delete(url)).resolves.toEqual({ data: '', status: 204 })
     })
 
-    it('correctly returns error responses and logs to console', () => {
+    test('correctly returns error responses and logs to console', () => {
       const url = 'v1/addresses'
 
       // Mock out the delete request
@@ -93,7 +100,7 @@ describe('HTTPClient', () => {
         .reply(500)
 
       // Make the request
-      return expect(httpClient.delete(url)).rejects.toEqual(new Error('Request failed with status code 500'))
+      return expect(HTTPClient.delete(url)).rejects.toEqual(new Error('Request failed with status code 500'))
     })
   })
 })

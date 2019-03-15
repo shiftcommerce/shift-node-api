@@ -1,5 +1,6 @@
 const SHIFTClient = require('../../src/shift-client')
 const nock = require('nock')
+const { shiftApiConfig } = require('../../src/index')
 
 // Fixtures
 const menuResponse = require('../fixtures/menu-response-payload')
@@ -22,12 +23,21 @@ const productResponse = require('../fixtures/product-response-payload')
 const productResponseParsed = require('../fixtures/product-response-parsed')
 const createAddressBookResponse = require('../fixtures/create-addressbook-response')
 const createAddressBookResponseParsed = require('../fixtures/create-addressbook-response-parsed')
+const createOrderResponse = require('../fixtures/create-order-response')
+const createOrderResponseParsed = require('../fixtures/create-order-response-parsed')
+
+beforeEach(() => {
+  shiftApiConfig.set({
+    apiHost: 'http://example.com',
+    apiTenant: 'test_tenant'
+  })
+})
 
 afterEach(() => { nock.cleanAll() })
 
 describe('SHIFTClient', () => {
-  describe('getMenusV1', () => {
-    test('returns a correct response with a valid query', () => {
+  describe('getMenusV1()', () => {
+    test('should return a parsed response', () => {
       const query = {
         fields: {
           menu_items: 'title,slug,menu_items,item,background_image_link,background_image,published,canonical_path,meta_attributes',
@@ -43,8 +53,8 @@ describe('SHIFTClient', () => {
         include: 'menu_items'
       }
 
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/menus`)
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/menus`)
         .query(true)
         .reply(200, menuResponse)
 
@@ -54,87 +64,53 @@ describe('SHIFTClient', () => {
           expect(response.data).toEqual(menuResponseParsed)
         })
     })
-
-    test('returns an error when called with an invalid query', () => {
-      const query = {
-        fields: {
-          menu_items: 'title,slug,menu_items,item,background_image_link,background_image,published,canonical_path,meta_attributes',
-          menus: 'title,reference,updated_at,menu_items'
-        },
-        filter: {
-          filter: {
-            reference: {
-              e: 'mega-menu'
-            }
-          }
-        },
-        include: 'menu_items'
-      }
-
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/menus`)
-        .query(true)
-        .reply(500)
-
-      return SHIFTClient.getMenusV1(query)
-        .catch(error => {
-          expect(error).toEqual(new Error('Request failed with status code 500'))
-        })
-    })
   })
 
-  describe('getCartV1', () => {
-    test('fetches cart id from cookie and cart from the api', () => {
-      const req = {
-        signedCookies: {
-          cart: '35'
-        }
-      }
+  describe('getCartV1()', () => {
+    test('should return a parsed response', () => {
+      const cartId = '35'
 
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/carts/35`)
-        .reply(200, { cart: 'cart_data' })
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/35`)
+        .reply(200, cartResponse)
 
-      return SHIFTClient.getCartV1(req.signedCookies.cart)
+      return SHIFTClient.getCartV1(cartId)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual({ cart: 'cart_data' })
-        })
-    })
-  })
-
-  describe('createNewCartWithLineItemV1', () => {
-    test('creates a new cart with LineItem', () => {
-      const req = {
-        signedCookies: {},
-        session: {
-          customerId: null
-        },
-        body: {
-          variantId: '100',
-          quantity: 4
-        }
-      }
-
-      const res = {
-        status: jest.fn(x => ({
-          send: {}
-        })),
-        cookie: jest.fn()
-      }
-
-      nock(process.env.API_HOST)
-        .post(`/${process.env.API_TENANT}/v1/carts`)
-        .reply(201, cartResponse)
-
-      return SHIFTClient.createNewCartWithLineItemV1(req, res)
-        .then(response => {
-          expect(response.status).toEqual(201)
           expect(response.data).toEqual(cartResponseParsed)
         })
     })
+  })
 
-    test('creates a new cart with LineItem then assigns cart to customer if a customerId is present', () => {
+  describe('addLineItemToCartV1()', () => {
+    test('should add lineitem to existing cart then call getCartV1()', () => {
+      const cartId = '35'
+      const req = {
+        body: {
+          variantId: '100',
+          quantity: 3
+        }
+      }
+
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/carts/35/line_items`)
+        .reply(200)
+
+      const getCartNock = nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/35`)
+        .reply(200, cartResponse)
+
+      return SHIFTClient.addLineItemToCartV1(req, {}, cartId)
+        .then(response => {
+          expect(response.status).toEqual(200)
+          expect(response.data).toEqual(cartResponseParsed)
+          expect(getCartNock.isDone()).toEqual(true)
+        })
+    })
+  })
+
+  describe('createNewCartWithLineItemV1()', () => {
+    test('should create a new cart with LineItem then assigns cart to customer if customer id is present', () => {
       const req = {
         signedCookies: {},
         session: {
@@ -153,16 +129,16 @@ describe('SHIFTClient', () => {
         cookie: jest.fn()
       }
 
-      const createCartRequest = nock(process.env.API_HOST)
-        .post(`/${process.env.API_TENANT}/v1/carts`)
+      const createCartRequest = nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/carts`)
         .reply(201, { data: { id: '3' } })
 
-      const updateCartRequest = nock(process.env.API_HOST)
-        .patch(`/${process.env.API_TENANT}/v1/carts/3`)
+      const updateCartRequest = nock(shiftApiConfig.get().apiHost)
+        .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/3`)
         .reply(200, { data: { id: '3' } })
 
       return SHIFTClient.createNewCartWithLineItemV1(req, res)
-        .then(response => {
+        .then((response, res) => {
           expect(response.status).toEqual(200)
           expect(response.data).toEqual({ id: '3' })
           expect(createCartRequest.isDone()).toEqual(true)
@@ -171,92 +147,96 @@ describe('SHIFTClient', () => {
     })
   })
 
-  describe('addLineItemToCartV1', () => {
-    test('adds lineItem to existing cart', () => {
-      const cartId = '14'
-      const req = {
-        body: {
-          variantId: '100',
-          quantity: 4
-        }
-      }
+  describe('assignCartToCustomerV1()', () => {
+    test('assigns cart to customer then returns a parsed response', () => {
+      const cartId = '35'
+      const customerId = '1'
 
-      const addLineItemMock = nock(process.env.API_HOST)
-        .post(`/${process.env.API_TENANT}/v1/carts/${cartId}/line_items`)
-        .reply(201, { cart: 'cart_data' })
+      nock(shiftApiConfig.get().apiHost)
+        .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .reply(200, { data: { id: '3' } })
 
-      // nock the get request after the post has finished
-
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/carts/${cartId}`)
-        .reply(200, { cart: 'cart_data' })
-
-      return SHIFTClient.addLineItemToCartV1(req, {}, cartId)
+      return SHIFTClient.assignCartToCustomerV1(cartId, customerId)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual({ cart: 'cart_data' })
-          expect(addLineItemMock.isDone()).toBe(true)
+          expect(response.data).toEqual({ id: '3' })
         })
     })
   })
 
-  describe('updateLineItemV1', () => {
-    test('updates lineItem quantity to existing cart', () => {
+  describe('deleteLineItemV1()', () => {
+    test('updates lineItem quantity to existing cart, then calls getCartV1()', () => {
       const cartId = '14'
       const lineItemId = '1'
-      const newQuantity = 2
 
-      const updateLineItemMock = nock(process.env.API_HOST)
-        .patch(`/${process.env.API_TENANT}/v1/carts/${cartId}/line_items/${lineItemId}`)
+      const deleteLineItemMock = nock(shiftApiConfig.get().apiHost)
+        .delete(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}/line_items/${lineItemId}`)
         .reply(201)
 
       // nock the get request after the post has finished
 
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/carts/${cartId}`)
+      const getCartNock = nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .reply(200, { cart: 'cart_data' })
+
+      return SHIFTClient.deleteLineItemV1(lineItemId, cartId)
+        .then(response => {
+          expect(response.status).toEqual(200)
+          expect(response.data).toEqual({ cart: 'cart_data' })
+          expect(deleteLineItemMock.isDone()).toEqual(true)
+          expect(getCartNock.isDone()).toEqual(true)
+        })
+    })
+  })
+
+  describe('updateLineItemV1()', () => {
+    test('updates lineItem quantity to existing cart, then calls getCart()', () => {
+      const cartId = '14'
+      const lineItemId = '1'
+      const newQuantity = 2
+
+      const updateLineItemMock = nock(shiftApiConfig.get().apiHost)
+        .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}/line_items/${lineItemId}`)
+        .reply(201)
+
+      const getCartNock = nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
         .reply(200, { cart: 'cart_data' })
 
       return SHIFTClient.updateLineItemV1(newQuantity, cartId, lineItemId)
         .then(response => {
           expect(response.status).toEqual(200)
           expect(response.data).toEqual({ cart: 'cart_data' })
-          expect(updateLineItemMock.isDone()).toBe(true)
+          expect(updateLineItemMock.isDone()).toEqual(true)
+          expect(getCartNock.isDone()).toEqual(true)
         })
     })
   })
 
-  describe('deleteLineItemV1', () => {
-    test('updates lineItem quantity to existing cart', () => {
-      const cartId = '14'
-      const lineItemId = '1'
-      const newQuantity = 2
+  describe('addCartCouponV1()', () => {
+    test('adds a coupon to cart when coupon code is valid then returns a parsed response', () => {
+      const cartId = '17'
+      const couponCode = 'ABC-DISCOUNT-XYZ'
 
-      const updateLineItemMock = nock(process.env.API_HOST)
-        .patch(`/${process.env.API_TENANT}/v1/carts/${cartId}/line_items/${lineItemId}`)
-        .reply(201)
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}/coupons`)
+        .reply(201, { coupon: 'coupon_data' })
 
-      // nock the get request after the post has finished
-
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/carts/${cartId}`)
-        .reply(200, { cart: 'cart_data' })
-
-      return SHIFTClient.updateLineItemV1(newQuantity, cartId, lineItemId)
+      return SHIFTClient.addCartCouponV1(couponCode, cartId)
         .then(response => {
-          expect(response.status).toEqual(200)
-          expect(response.data).toEqual({ cart: 'cart_data' })
-          expect(updateLineItemMock.isDone()).toBe(true)
+          expect(response.status).toEqual(201)
+          expect(response.data).toEqual({ coupon: 'coupon_data' })
         })
     })
   })
 
-  describe('setCartShippingMethodV1', () => {
+  describe('setCartShippingMethodV1()', () => {
     test('updates the cart with a shipping address id', () => {
       const cartId = '14'
       const shippingMethodId = '12'
 
-      const updateCartMock = nock(process.env.API_HOST)
-        .patch(`/${process.env.API_TENANT}/v1/carts/${cartId}`)
+      const updateCartMock = nock(shiftApiConfig.get().apiHost)
+        .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
         .reply(200, { cart: 'updated_cart_data' })
 
       return SHIFTClient.setCartShippingMethodV1(cartId, shippingMethodId)
@@ -267,11 +247,11 @@ describe('SHIFTClient', () => {
         })
     })
   })
-
-  describe('getShippingMethodsV1', () => {
+  
+  describe('getShippingMethodsV1()', () => {
     test('returns shipping methods', () => {
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/shipping_methods`)
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/shipping_methods`)
         .reply(201, { shipping_methods: 'shipping_methods_data' })
 
       return SHIFTClient.getShippingMethodsV1()
@@ -282,7 +262,7 @@ describe('SHIFTClient', () => {
     })
   })
 
-  describe('createCustomerAddressV1', () => {
+  describe('createCustomerAddressV1()', () => {
     test('creates a new address', () => {
       const req = {
         body: {
@@ -296,8 +276,8 @@ describe('SHIFTClient', () => {
         }
       }
 
-      nock(process.env.API_HOST)
-        .post(`/${process.env.API_TENANT}/v1/addresses`)
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/addresses`)
         .reply(201, { address: 'new_address_data' })
 
       return SHIFTClient.createCustomerAddressV1(req)
@@ -308,30 +288,13 @@ describe('SHIFTClient', () => {
     })
   })
 
-  describe('setCartShippingAddressV1', () => {
-    test('updates the cart with a shipping address id', () => {
+  describe('setCartBillingAddressV1()', () => {
+    test('should return a parsed response', () => {
       const cartId = '35'
       const addressId = '12'
 
-      nock(process.env.API_HOST)
-        .patch(`/${process.env.API_TENANT}/v1/carts/${cartId}`)
-        .reply(200, { cart: 'updated_cart_data' })
-
-      return SHIFTClient.setCartShippingAddressV1(addressId, cartId)
-        .then(response => {
-          expect(response.status).toEqual(200)
-          expect(response.data).toEqual({ cart: 'updated_cart_data' })
-        })
-    })
-  })
-
-  describe('setCartBillingAddressV1', () => {
-    test('updates the cart with a billing address id', () => {
-      const cartId = '35'
-      const addressId = '12'
-
-      nock(process.env.API_HOST)
-        .patch(`/${process.env.API_TENANT}/v1/carts/${cartId}`)
+      nock(shiftApiConfig.get().apiHost)
+        .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
         .reply(200, { cart: 'updated_cart_data' })
 
       return SHIFTClient.setCartBillingAddressV1(addressId, cartId)
@@ -342,19 +305,125 @@ describe('SHIFTClient', () => {
     })
   })
 
-  describe('addCartCouponV1', () => {
-    test('adds a coupon to cart when coupon code is valid', () => {
-      const cartId = '17'
-      const couponCode = 'ABC-DISCOUNT-XYZ'
+  describe('setCartShippingAddressV1()', () => {
+    test('should return a parsed response', () => {
+      const cartId = '35'
+      const addressId = '12'
 
-      nock(process.env.API_HOST)
-        .post(`/${process.env.API_TENANT}/v1/carts/${cartId}/coupons`)
-        .reply(201, { coupon: 'coupon_data' })
+      nock(shiftApiConfig.get().apiHost)
+        .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .reply(200, { cart: 'updated_cart_data' })
 
-      return SHIFTClient.addCartCouponV1(couponCode, cartId)
+      return SHIFTClient.setCartShippingAddressV1(addressId, cartId)
         .then(response => {
-          expect(response.status).toEqual(201)
-          expect(response.data).toEqual({ coupon: 'coupon_data' })
+          expect(response.status).toEqual(200)
+          expect(response.data).toEqual({ cart: 'updated_cart_data' })
+        })
+    })
+  })
+
+  describe('getResourceBySlugV1', () => {
+    test('endpoint returns a slug', () => {
+      const queryObject = {
+        filter: {
+          path: 'coffee'
+        },
+        page: {
+          number: 1,
+          size: 1
+        },
+        fields: {
+          slugs: 'resource_type,resource_id,active,slug'
+        }
+      }
+
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/slugs`)
+        .query(true)
+        .reply(200, slugResponse)
+
+      return SHIFTClient.getResourceBySlugV1(queryObject)
+        .then(response => {
+          expect(response.status).toEqual(200)
+          expect(response.data).toEqual(slugResponseParsed)
+        })
+    })
+
+    test('endpoint errors with incorrect data and returns console.log', () => {
+      const queryObject = {
+        filter: {
+          path: 'incorrectslug'
+        },
+        page: {
+          size: ''
+        },
+        fields: {
+          slugs: 'resource_type,resource_id,active,slug'
+        }
+      }
+
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/slugs`)
+        .query(queryObject)
+        .reply(500)
+
+      expect.assertions(1)
+
+      return SHIFTClient.getResourceBySlugV1(queryObject)
+        .catch(error => {
+          expect(error).toEqual(new Error('Request failed with status code 500'))
+        })
+    })
+  })
+
+  describe('getProductV1', () => {
+    test('returns a product when given a correct id', () => {
+      const queryObject = {
+        include: 'asset_files,variants,bundles,bundles.asset_files,template,meta.*',
+        fields: { asset_files: 'image_height,image_width,s3_url' }
+      }
+
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/products/172`)
+        .query(queryObject)
+        .reply(200, productResponse)
+
+      return SHIFTClient.getProductV1(172, queryObject)
+        .then(response => {
+          expect(response.status).toEqual(200)
+          expect(response.data).toEqual(productResponseParsed)
+        })
+    })
+
+    test('returns an error with incorrect id', () => {
+      const queryObject = {
+        include: 'asset_files,variants,bundles,bundles.asset_files,template,meta.*',
+        fields: { asset_files: 'image_height,image_width,s3_url' }
+      }
+
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/products/20000`)
+        .query(queryObject)
+        .reply(404, {
+          'errors': [
+            {
+              'title': 'Record not found',
+              'detail': 'The record identified by 20000 could not be found.',
+              'code': '404',
+              'status': '404'
+            }
+          ],
+          'meta': {
+            'facets': []
+          }
+        })
+
+      expect.assertions(2)
+
+      return SHIFTClient.getProductV1(20000, queryObject)
+        .catch(error => {
+          expect(error).toEqual(new Error('Request failed with status code 404'))
+          expect(error.response.data.errors[0].title).toEqual('Record not found')
         })
     })
   })
@@ -365,8 +434,8 @@ describe('SHIFTClient', () => {
         include: 'template,meta.*'
       }
 
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/static_pages/56`)
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/static_pages/56`)
         .query(queryObject)
         .reply(200, staticPageResponse)
 
@@ -382,8 +451,8 @@ describe('SHIFTClient', () => {
         include: 'template,meta.*'
       }
 
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/static_pages/1001`)
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/static_pages/1001`)
         .query(queryObject)
         .reply(404, {
           errors: [
@@ -407,67 +476,13 @@ describe('SHIFTClient', () => {
     })
   })
 
-  describe('getSlugDataV1', () => {
-    test('endpoint returns a slug', () => {
-      const queryObject = {
-        filter: {
-          path: 'coffee'
-        },
-        page: {
-          number: 1,
-          size: 1
-        },
-        fields: {
-          slugs: 'resource_type,resource_id,active,slug'
-        }
-      }
-
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/slugs`)
-        .query(true)
-        .reply(200, slugResponse)
-
-      return SHIFTClient.getSlugDataV1(queryObject)
-        .then(response => {
-          expect(response.status).toEqual(200)
-          expect(response.data).toEqual(slugResponseParsed)
-        })
-    })
-
-    test('endpoint errors with incorrect data and returns console.log', () => {
-      const queryObject = {
-        filter: {
-          path: 'incorrectslug'
-        },
-        page: {
-          size: ''
-        },
-        fields: {
-          slugs: 'resource_type,resource_id,active,slug'
-        }
-      }
-
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/slugs`)
-        .query(queryObject)
-        .reply(500)
-
-      expect.assertions(1)
-
-      return SHIFTClient.getSlugDataV1(queryObject)
-        .catch(error => {
-          expect(error).toEqual(new Error('Request failed with status code 500'))
-        })
-    })
-  })
-
-  describe('getCategoryByIdV1', () => {
+  describe('getCategoryV1', () => {
     test('returns a category when given a correct id', () => {
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/category_trees/reference:web/categories/56`)
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/category_trees/reference:web/categories/56`)
         .reply(200, categoryResponse)
 
-      return SHIFTClient.getCategoryByIdV1(56)
+      return SHIFTClient.getCategoryV1(56)
         .then(response => {
           expect(response.status).toEqual(200)
           expect(response.data).toEqual(categoryResponseParsed)
@@ -475,8 +490,8 @@ describe('SHIFTClient', () => {
     })
 
     test('endpoint errors with incorrect id and returns console.log', () => {
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/category_trees/reference:web/categories/1`)
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/category_trees/reference:web/categories/1`)
         .reply(404, {
           errors: [
             {
@@ -493,7 +508,7 @@ describe('SHIFTClient', () => {
 
       expect.assertions(3)
 
-      return SHIFTClient.getCategoryByIdV1(1)
+      return SHIFTClient.getCategoryV1(1)
         .catch(error => {
           expect(error).toEqual(new Error('Request failed with status code 404'))
           expect(error.response.data.errors[0].title).toEqual('Record not found')
@@ -502,54 +517,32 @@ describe('SHIFTClient', () => {
     })
   })
 
-  describe('getProductByIdV1', () => {
-    test('returns a product when given a correct id', () => {
+  describe('getAccountV1', () => {
+    test('gets an account if there is a customer id', () => {
+      const customerId = 10
       const queryObject = {
-        include: 'asset_files,variants,bundles,bundles.asset_files,template,meta.*',
-        fields: { asset_files: 'image_height,image_width,s3_url' }
+        fields: {
+          customer_accounts: 'email,meta_attributes'
+        },
+        include: ''
       }
 
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/products/172`)
-        .query(queryObject)
-        .reply(200, productResponse)
+      const accountData = {
+        id: '10',
+        attributes: {
+          key: 'value'
+        }
+      }
 
-      return SHIFTClient.getProductByIdV1(172, queryObject)
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/${customerId}`)
+        .query(true)
+        .reply(200, accountData)
+
+      return SHIFTClient.getAccountV1(queryObject, customerId)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual(productResponseParsed)
-        })
-    })
-
-    test('returns an error with incorrect id', () => {
-      const queryObject = {
-        include: 'asset_files,variants,bundles,bundles.asset_files,template,meta.*',
-        fields: { asset_files: 'image_height,image_width,s3_url' }
-      }
-
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/products/20000`)
-        .query(queryObject)
-        .reply(404, {
-          'errors': [
-            {
-              'title': 'Record not found',
-              'detail': 'The record identified by 20000 could not be found.',
-              'code': '404',
-              'status': '404'
-            }
-          ],
-          'meta': {
-            'facets': []
-          }
-        })
-
-      expect.assertions(2)
-
-      return SHIFTClient.getProductByIdV1(20000, queryObject)
-        .catch(error => {
-          expect(error).toEqual(new Error('Request failed with status code 404'))
-          expect(error.response.data.errors[0].title).toEqual('Record not found')
+          expect(response.data).toEqual(accountData)
         })
     })
   })
@@ -569,8 +562,8 @@ describe('SHIFTClient', () => {
         }
       }
 
-      nock(process.env.API_HOST)
-        .post(`/${process.env.API_TENANT}/v1/customer_accounts`)
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts`)
         .reply(201, registerResponse)
 
       return SHIFTClient.createCustomerAccountV1(body)
@@ -594,8 +587,8 @@ describe('SHIFTClient', () => {
         }
       }
 
-      nock(process.env.API_HOST)
-        .post(`/${process.env.API_TENANT}/v1/customer_accounts`)
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts`)
         .reply(422, register422response)
 
       expect.assertions(3)
@@ -621,8 +614,8 @@ describe('SHIFTClient', () => {
         }
       }
 
-      nock(process.env.API_HOST)
-        .post(`/${process.env.API_TENANT}/v1/customer_account_authentications`)
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/customer_account_authentications`)
         .reply(201, loginResponse)
 
       return SHIFTClient.loginCustomerAccountV1(body)
@@ -643,8 +636,8 @@ describe('SHIFTClient', () => {
         }
       }
 
-      nock(process.env.API_HOST)
-        .post(`/${process.env.API_TENANT}/v1/customer_account_authentications`)
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/customer_account_authentications`)
         .reply(404, {
           errors: [
             {
@@ -670,41 +663,11 @@ describe('SHIFTClient', () => {
     })
   })
 
-  describe('getAccountV1', () => {
-    test('gets an account if there is a customer id', () => {
-      const customerId = 10
-      const queryObject = {
-        fields: {
-          customer_accounts: 'email,meta_attributes'
-        },
-        include: ''
-      }
-
-      const accountData = {
-        id: '10',
-        attributes: {
-          key: 'value'
-        }
-      }
-
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/customer_accounts/${customerId}`)
-        .query(true)
-        .reply(200, accountData)
-
-      return SHIFTClient.getAccountV1(queryObject, customerId)
-        .then(response => {
-          expect(response.status).toEqual(200)
-          expect(response.data).toEqual(accountData)
-        })
-    })
-  })
-
   describe('getCustomerOrdersV1', () => {
     test('gets customer orders from oms', () => {
       const query = {
         filter: {
-          account_reference: process.env.API_TENANT,
+          account_reference: shiftApiConfig.get().apiTenant,
           customer_reference: '123456'
         },
         fields: {
@@ -765,8 +728,8 @@ describe('SHIFTClient', () => {
 
   describe('getAddressBookV1', () => {
     test('endpoint returns address book with correct id', () => {
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/customer_accounts/77/addresses`)
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77/addresses`)
         .reply(200, addressBookResponse)
 
       return SHIFTClient.getAddressBookV1(77)
@@ -804,40 +767,14 @@ describe('SHIFTClient', () => {
         }
       }
 
-      nock(process.env.API_HOST)
-        .get(`/${process.env.API_TENANT}/v1/customer_accounts/123123123/addresses`)
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/123123123/addresses`)
         .reply(200, addressBookWrongIdResponse)
 
       return SHIFTClient.getAddressBookV1(123123123)
         .then(response => {
           expect(response.status).toEqual(200)
           expect(response.data).toEqual(addressBookWrongIdResponseParsed)
-        })
-    })
-  })
-
-  describe('deleteAddressV1', () => {
-    test('deletes an address from the address book', () => {
-      nock(process.env.API_HOST)
-        .delete(`/${process.env.API_TENANT}/v1/customer_accounts/77/addresses/434`)
-        .reply(204)
-
-      return SHIFTClient.deleteAddressV1(434, 77)
-        .then(response => {
-          expect(response.status).toEqual(204)
-        })
-    })
-
-    test('returns a 404 and logs it to the console if address being deleted does not exist', () => {
-      nock(process.env.API_HOST)
-        .delete(`/${process.env.API_TENANT}/v1/customer_accounts/77/addresses/123123123`)
-        .reply(404)
-
-      expect.assertions(1)
-
-      return SHIFTClient.deleteAddressV1(123123123, 77)
-        .catch(error => {
-          expect(error).toEqual(new Error('Request failed with status code 404'))
         })
     })
   })
@@ -878,8 +815,8 @@ describe('SHIFTClient', () => {
         }
       }
 
-      nock(process.env.API_HOST)
-        .post(`/${process.env.API_TENANT}/v1/customer_accounts/77/addresses`)
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77/addresses`)
         .reply(201, createAddressBookResponse)
 
       return SHIFTClient.createAddressBookEntryV1(body, 77)
@@ -924,8 +861,8 @@ describe('SHIFTClient', () => {
         }
       }
 
-      nock(process.env.API_HOST)
-        .post(`/${process.env.API_TENANT}/v1/customer_accounts/77/addresses`)
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77/addresses`)
         .reply(422, {
           'errors': [
             {
@@ -958,6 +895,68 @@ describe('SHIFTClient', () => {
         .catch(error => {
           expect(error).toEqual(new Error('Request failed with status code 422'))
           expect(error.response.data.errors[0].title).toEqual("can't be blank")
+        })
+    })
+  })
+
+  describe('deleteAddressV1', () => {
+    test('deletes an address from the address book', () => {
+      nock(shiftApiConfig.get().apiHost)
+        .delete(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77/addresses/434`)
+        .reply(204)
+
+      return SHIFTClient.deleteAddressV1(434, 77)
+        .then(response => {
+          expect(response.status).toEqual(204)
+        })
+    })
+
+    test('returns a 404 and logs it to the console if address being deleted does not exist', () => {
+      nock(shiftApiConfig.get().apiHost)
+        .delete(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77/addresses/123123123`)
+        .reply(404)
+
+      expect.assertions(1)
+
+      return SHIFTClient.deleteAddressV1(123123123, 77)
+        .catch(error => {
+          expect(error).toEqual(new Error('Request failed with status code 404'))
+        })
+    })
+  })
+
+  describe('createOrderV1', () => {
+    test('creates an order with valid data', () => {
+      const body = {
+        data: {
+          type: 'create_order',
+          attributes: {
+            billing_address: {},
+            channel: 'web',
+            currency: 'GBP',
+            email: 'guest@order.com',
+            ip_address: '1.1.1.1',
+            line_items_resources: [],
+            shipping_address: {},
+            shipping_method: {},
+            discount_summaries: [],
+            sub_total: 19.45,
+            total: 19.45,
+            placed_at: '2018-10-31T14:37:34.113Z',
+            payment_transactions_resources: []
+          }
+        }
+      }
+
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v2/create_order`, body)
+        .query(true)
+        .reply(201, createOrderResponse)
+
+      return SHIFTClient.createOrderV1(body)
+        .then(response => {
+          expect(response.status).toEqual(201)
+          expect(response.data).toEqual(createOrderResponseParsed)
         })
     })
   })
