@@ -8,5 +8,3 @@ yarn-error.log
 
 # Ignore Mac files
 **.DS_Store
-
-.editorconfig

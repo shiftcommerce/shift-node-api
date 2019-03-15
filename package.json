@@ -1,5 +1,5 @@
 {
-  "name": "@shiftcommerce/shift-node-api",
+  "name": "@shiftcommerce/@shiftcommerce/shift-node-api",
   "version": "0.1.0",
   "main": "src/index.js",
   "author": "Shift Commerce",

@@ -8,6 +8,7 @@ const productEndpoints = require('./endpoints/product-endpoints')
 const staticPageEndpoints = require('./endpoints/static-page-endpoints')
 const categoryEndpoints = require('./endpoints/category-endpoints')
 const accountEndpoints = require('./endpoints/account-endpoints')
+const orderEndpoints = require('./endpoints/order-endpoints')
 
 class SHIFTClient {
   getMenusV1 (query) {
@@ -145,7 +146,10 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
-  // Forgotten password \/\/\/\/
+  createOrderV1 (orderPayload) {
+    return orderEndpoints.createOrderV1(orderPayload).then(this.determineResponse)
+  }
+
   getCustomerAccountByEmailV1 (email) {
     return accountEndpoints.getCustomerAccountByEmailV1(email)
       .then(this.determineResponse)
@@ -165,8 +169,6 @@ class SHIFTClient {
     return accountEndpoints.updateCustomerAccountPasswordV1(accountId, body)
       .then(this.determineResponse)
   }
-
-  // Forgotten password /\/\/\/\
 
   determineResponse (response) {
     const parsedPayload = new ApiParser().parse(response.data)

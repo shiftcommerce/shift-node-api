@@ -48,25 +48,20 @@ function deleteAddressV1 (addressId, customerAccountId) {
   return HTTPClient.delete(`v1/customer_accounts/${customerAccountId}/addresses/${addressId}`)
 }
 
-function getCustomerAccountByEmailV1 (customerAccountEmail) {
-  return HTTPClient.get(`v1/customer_accounts/email:${customerAccountEmail}`)
-    .then(this.determineResponse)
+function getCustomerAccountByEmailV1 (email) {
+  return HTTPClient.get(`v1/customer_accounts/email:${email}`)
 }
 
-function createPasswordRecoveryV1 (customerAccountId, data) {
-  return HTTPClient.post(`v1/customer_accounts/${customerAccountId}/password_recovery`, data)
-    .then(this.determineResponse)
+function createPasswordRecoveryV1 (accountId, data) {
+  return HTTPClient.post(`v1/customer_accounts/${accountId}/password_recovery`, data)
 }
 
 function getCustomerAccountByTokenV1 (token) {
   return HTTPClient.get(`v1/customer_accounts/token:${token}`)
-    .then(this.determineResponse)
 }
 
-function updateCustomerAccountPasswordV1 (customerAccountId, body) {
-  console.log({ body })
-  return HTTPClient.patch(`v1/customer_accounts/${customerAccountId}/password_recovery`, body)
-    .then(this.determineResponse)
+function updateCustomerAccountPasswordV1 (accountId, body) {
+  return HTTPClient.patch(`v1/customer_accounts/${accountId}/password_recovery`, body)
 }
 
 module.exports = {

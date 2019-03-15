@@ -252,7 +252,7 @@ describe('SHIFTClient', () => {
         })
     })
   })
-  
+
   describe('getShippingMethodsV1()', () => {
     it('returns shipping methods', () => {
       nock(shiftApiConfig.get().apiHost)
