@@ -1,6 +1,6 @@
 {
-  "name": "@shiftcommerce/@shiftcommerce/shift-node-api",
-  "version": "0.1.0",
+  "name": "@shiftcommerce/shift-node-api",
+  "version": "0.1.1",
   "main": "src/index.js",
   "author": "Shift Commerce",
   "license": "ISC",

@@ -21,7 +21,7 @@ beforeEach(() => {
 
 describe('HTTPClient', () => {
   describe('get', () => {
-    it('returns correct data', () => {
+    test('returns correct data', () => {
       const url = `v1/static_pages/56`
 
       nock(process.env.API_HOST)
@@ -31,7 +31,7 @@ describe('HTTPClient', () => {
       return expect(HTTPClient.get(url)).resolves.toEqual({ status: 200, data: staticPagePayload })
     })
 
-    it('returns error data if a bad request', () => {
+    test('returns error data if a bad request', () => {
       const url = `v1/static_pages/1001`
 
       const errors = {
@@ -54,7 +54,7 @@ describe('HTTPClient', () => {
   })
 
   describe('post', () => {
-    it('saves and returns data', () => {
+    test('saves and returns data', () => {
       const url = 'v1/customer_accounts'
 
       const body = {
@@ -78,7 +78,7 @@ describe('HTTPClient', () => {
   })
 
   describe('delete', () => {
-    it('correctly returns successful responses', () => {
+    test('correctly returns successful responses', () => {
       const url = 'v1/addresses'
 
       // Mock out the delete request
@@ -90,7 +90,7 @@ describe('HTTPClient', () => {
       return expect(HTTPClient.delete(url)).resolves.toEqual({ data: '', status: 204 })
     })
 
-    it('correctly returns error responses and logs to console', () => {
+    test('correctly returns error responses and logs to console', () => {
       const url = 'v1/addresses'
 
       // Mock out the delete request
