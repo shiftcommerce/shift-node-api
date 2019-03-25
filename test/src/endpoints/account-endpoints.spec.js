@@ -450,6 +450,8 @@ describe('createPasswordRecoveryV1', () => {
       .post(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/123123/password_recovery`)
       .reply(404, createPasswordRecoveryError)
 
+    expect.assertions(3)
+
     return createPasswordRecoveryV1(123123)
       .catch(error => {
         expect(error).toEqual(new Error('Request failed with status code 404'))
@@ -493,6 +495,8 @@ describe('getCustomerAccountByEmailV1', () => {
         }
       })
 
+    expect.assertions(3)
+
     return getCustomerAccountByEmailV1(customerAccountEmail)
       .catch(error => {
         expect(error).toEqual(new Error('Request failed with status code 404'))
@@ -535,6 +539,8 @@ describe('getCustomerAccountByTokenV1', () => {
           'self': '/reference/v1/customer_accounts/token:12345678911234567891'
         }
       })
+
+    expect.assertions(3)
 
     return getCustomerAccountByTokenV1(token)
       .catch(error => {

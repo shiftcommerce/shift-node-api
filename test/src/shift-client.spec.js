@@ -952,6 +952,8 @@ describe('SHIFTClient', () => {
         .post(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/123123/password_recovery`)
         .reply(404, createPasswordRecoveryError)
 
+      expect.assertions(3)
+
       return SHIFTClient.createPasswordRecoveryV1(123123)
         .catch(error => {
           expect(error).toEqual(new Error('Request failed with status code 404'))
@@ -995,6 +997,8 @@ describe('SHIFTClient', () => {
           }
         })
 
+      expect.assertions(3)
+
       return SHIFTClient.getCustomerAccountByEmailV1(customerAccountEmail)
         .catch(error => {
           expect(error).toEqual(new Error('Request failed with status code 404'))
@@ -1037,6 +1041,8 @@ describe('SHIFTClient', () => {
             'self': '/reference/v1/customer_accounts/token:12345678911234567891'
           }
         })
+
+      expect.assertions(3)
 
       return SHIFTClient.getCustomerAccountByTokenV1(token)
         .catch(error => {
