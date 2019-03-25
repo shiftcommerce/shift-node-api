@@ -30,7 +30,7 @@ beforeEach(() => {
 afterEach(() => { nock.cleanAll() })
 
 describe('getCartV1', () => {
-  it('fetches cart from the api', () => {
+  test('fetches cart from the api', () => {
     const cartId = '35'
     nock(shiftApiConfig.get().apiHost)
       .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/35`)
@@ -45,7 +45,7 @@ describe('getCartV1', () => {
 })
 
 describe('createNewCartWithLineItemV1', () => {
-  it('creates a new cart with LineItem', () => {
+  test('creates a new cart with LineItem', () => {
     const req = {
       signedCookies: {},
       session: {
@@ -77,7 +77,7 @@ describe('createNewCartWithLineItemV1', () => {
 })
 
 describe('addLineItemToCartV1', () => {
-  it('adds lineItem to existing cart', () => {
+  test('adds lineItem to existing cart', () => {
     const cartId = '14'
     const req = {
       body: {
@@ -100,7 +100,7 @@ describe('addLineItemToCartV1', () => {
 })
 
 describe('assignCartToCustomerV1', () => {
-  it('assigns cart to customer', () => {
+  test('assigns cart to customer', () => {
     const cartId = '14'
     const req = {
       session: {
@@ -125,7 +125,7 @@ describe('assignCartToCustomerV1', () => {
 })
 
 describe('updateLineItemV1', () => {
-  it('updates lineItem quantity to existing cart', () => {
+  test('updates lineItem quantity to existing cart', () => {
     const cartId = '14'
     const lineItemId = '1'
     const newQuantity = 2
@@ -143,7 +143,7 @@ describe('updateLineItemV1', () => {
 })
 
 describe('deleteLineItemV1', () => {
-  it('updates lineItem quantity to existing cart', () => {
+  test('updates lineItem quantity to existing cart', () => {
     const cartId = '14'
     const lineItemId = '1'
     const newQuantity = 2
@@ -161,7 +161,7 @@ describe('deleteLineItemV1', () => {
 })
 
 describe('setCartShippingMethodV1', () => {
-  it('updates the cart with a shipping address id', () => {
+  test('updates the cart with a shipping address id', () => {
     const cartId = '14'
     const shippingMethodId = '12'
 
@@ -179,7 +179,7 @@ describe('setCartShippingMethodV1', () => {
 })
 
 describe('getShippingMethodsV1', () => {
-  it('returns shipping methods', () => {
+  test('returns shipping methods', () => {
     nock(shiftApiConfig.get().apiHost)
       .get(`/${shiftApiConfig.get().apiTenant}/v1/shipping_methods`)
       .reply(201, { shipping_methods: 'shipping_methods_data' })
@@ -193,7 +193,7 @@ describe('getShippingMethodsV1', () => {
 })
 
 describe('createCustomerAddressV1', () => {
-  it('creates a new address', () => {
+  test('creates a new address', () => {
     const req = {
       body: {
         first_name: 'First name',
@@ -219,7 +219,7 @@ describe('createCustomerAddressV1', () => {
 })
 
 describe('setCartShippingAddressV1', () => {
-  it('updates the cart with a shipping address id', () => {
+  test('updates the cart with a shipping address id', () => {
     const cartId = '35'
     const addressId = '12'
 
@@ -236,7 +236,7 @@ describe('setCartShippingAddressV1', () => {
 })
 
 describe('setCartBillingAddressV1', () => {
-  it('updates the cart with a billing address id', () => {
+  test('updates the cart with a billing address id', () => {
     const cartId = '35'
     const addressId = '12'
 
@@ -253,7 +253,7 @@ describe('setCartBillingAddressV1', () => {
 })
 
 describe('addCartCouponV1', () => {
-  it('adds a coupon to cart when coupon code is valid', () => {
+  test('adds a coupon to cart when coupon code is valid', () => {
     const cartId = '17'
     const couponCode = 'ABC-DISCOUNT-XYZ'
 
