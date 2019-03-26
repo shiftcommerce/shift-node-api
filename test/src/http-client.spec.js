@@ -16,9 +16,8 @@ beforeEach(() => {
   shiftApiConfig.set({
     apiHost: 'http://example.com',
     apiTenant: 'test_tenant'
-  })  
+  })
 })
-
 
 describe('HTTPClient', () => {
   describe('get', () => {

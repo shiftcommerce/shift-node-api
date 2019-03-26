@@ -1,10 +1,10 @@
 const HTTPClient = require('../http-client')
 
-function getCartV1(cartId) {
+function getCartV1 (cartId) {
   return HTTPClient.get(`v1/carts/${cartId}`)
 }
 
-function addLineItemToCartV1(req, res, cartId) {
+function addLineItemToCartV1 (req, res, cartId) {
   const payload = {
     data: {
       type: 'line_items',
@@ -19,7 +19,7 @@ function addLineItemToCartV1(req, res, cartId) {
   return HTTPClient.post(`v1/carts/${cartId}/line_items`, payload)
 }
 
-function createNewCartWithLineItemV1(req, res) {
+function createNewCartWithLineItemV1 (req, res) {
   const payload = {
     data: {
       type: 'carts',
@@ -35,7 +35,7 @@ function createNewCartWithLineItemV1(req, res) {
   return HTTPClient.post(`v1/carts`, payload)
 }
 
-function assignCartToCustomerV1(cartId, customerId) {
+function assignCartToCustomerV1 (cartId, customerId) {
   const payload = {
     data: {
       type: 'carts',
@@ -48,7 +48,7 @@ function assignCartToCustomerV1(cartId, customerId) {
   return HTTPClient.patch(`v1/carts/${cartId}`, payload)
 }
 
-function deleteLineItemV1(lineItemId, cartId) {
+function deleteLineItemV1 (lineItemId, cartId) {
   const payload = {
     data: {
       type: 'line_items',
@@ -61,7 +61,7 @@ function deleteLineItemV1(lineItemId, cartId) {
   return HTTPClient.delete(`v1/carts/${cartId}/line_items/${lineItemId}`, payload)
 }
 
-function updateLineItemV1(newQuantity, cartId, lineItemId) {
+function updateLineItemV1 (newQuantity, cartId, lineItemId) {
   const payload = {
     data: {
       type: 'line_items',
@@ -74,7 +74,7 @@ function updateLineItemV1(newQuantity, cartId, lineItemId) {
   return HTTPClient.patch(`v1/carts/${cartId}/line_items/${lineItemId}`, payload)
 }
 
-function addCartCouponV1(couponCode, cartId) {
+function addCartCouponV1 (couponCode, cartId) {
   const payload = {
     data: {
       type: 'coupons',
@@ -87,7 +87,7 @@ function addCartCouponV1(couponCode, cartId) {
   return HTTPClient.post(`v1/carts/${cartId}/coupons`, payload)
 }
 
-function setCartShippingMethodV1(cartId, shippingMethodId) {
+function setCartShippingMethodV1 (cartId, shippingMethodId) {
   const payload = {
     data: {
       type: 'carts',
@@ -100,11 +100,11 @@ function setCartShippingMethodV1(cartId, shippingMethodId) {
   return HTTPClient.patch(`v1/carts/${cartId}`, payload)
 }
 
-function getShippingMethodsV1() {
+function getShippingMethodsV1 () {
   return HTTPClient.get('v1/shipping_methods')
 }
 
-function createCustomerAddressV1(req) {
+function createCustomerAddressV1 (req) {
   const payload = {
     data: {
       type: 'addresses',
@@ -131,7 +131,7 @@ function createCustomerAddressV1(req) {
   return HTTPClient.post('v1/addresses', payload)
 }
 
-function setCartBillingAddressV1(addressId, cartId) {
+function setCartBillingAddressV1 (addressId, cartId) {
   const payload = {
     data: {
       type: 'carts',
@@ -144,7 +144,7 @@ function setCartBillingAddressV1(addressId, cartId) {
   return HTTPClient.patch(`v1/carts/${cartId}`, payload)
 }
 
-function setCartShippingAddressV1(addressId, cartId) {
+function setCartShippingAddressV1 (addressId, cartId) {
   const payload = {
     data: {
       type: 'carts',

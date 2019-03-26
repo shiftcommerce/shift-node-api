@@ -23,6 +23,13 @@ const productResponse = require('../fixtures/product-response-payload')
 const productResponseParsed = require('../fixtures/product-response-parsed')
 const createAddressBookResponse = require('../fixtures/create-addressbook-response')
 const createAddressBookResponseParsed = require('../fixtures/create-addressbook-response-parsed')
+const getAccountByEmailResponse = require('../fixtures/account-by-email-response')
+const getAccountByEmailResponseParsed = require('../fixtures/account-by-email-response-parsed')
+const createPasswordRecoveryResponse = require('../fixtures/create-password-recovery-response')
+const createPasswordRecoveryResponseParsed = require('../fixtures/create-password-recovery-response-parsed')
+const createPasswordRecoveryError = require('../fixtures/create-password-recovery-error')
+const getAccountByTokenResponse = require('../fixtures/account-by-token-response')
+const getAccountByTokenResponseParsed = require('../fixtures/account-by-token-response-parsed')
 const createOrderResponse = require('../fixtures/create-order-response')
 const createOrderResponseParsed = require('../fixtures/create-order-response-parsed')
 
@@ -247,7 +254,7 @@ describe('SHIFTClient', () => {
         })
     })
   })
-  
+
   describe('getShippingMethodsV1()', () => {
     test('returns shipping methods', () => {
       nock(shiftApiConfig.get().apiHost)
@@ -925,6 +932,127 @@ describe('SHIFTClient', () => {
     })
   })
 
+  describe('createPasswordRecoveryV1', () => {
+    test('creates a password recovery token', () => {
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/99/password_recovery`)
+        .reply(201, createPasswordRecoveryResponse)
+
+      return SHIFTClient.createPasswordRecoveryV1(99)
+        .then(response => {
+          expect(response.status).toEqual(201)
+          expect(response.data).toEqual(createPasswordRecoveryResponseParsed)
+          expect(response.data.token_present).toBe(true)
+          expect(response.data.token_expired).toBe(false)
+        })
+    })
+
+    test('returns an error with a customer account id that does not exist', () => {
+      nock(shiftApiConfig.get().apiHost)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/123123/password_recovery`)
+        .reply(404, createPasswordRecoveryError)
+
+      expect.assertions(3)
+
+      return SHIFTClient.createPasswordRecoveryV1(123123)
+        .catch(error => {
+          expect(error).toEqual(new Error('Request failed with status code 404'))
+          expect(error.response.data.errors[0].detail).toEqual('translation missing: en.api.v1.customer_accounts.password_recovery.create.not_found')
+          expect(error.response.data.errors[0].meta.exception).toEqual("Couldn't find CustomerAccount")
+        })
+    })
+  })
+
+  describe('getCustomerAccountByEmailV1', () => {
+    test('returns a customer account by their email address', () => {
+      const customerAccountEmail = 'testaccount@example.com'
+
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/email:${customerAccountEmail}`)
+        .reply(200, getAccountByEmailResponse)
+
+      return SHIFTClient.getCustomerAccountByEmailV1(customerAccountEmail)
+        .then(response => {
+          expect(response.status).toEqual(200)
+          expect(response.data).toEqual(getAccountByEmailResponseParsed)
+        })
+    })
+
+    test('returns an error with an email that does not exist', () => {
+      const customerAccountEmail = 'fake@fake.com'
+
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/email:${customerAccountEmail}`)
+        .reply(404, {
+          'errors': [
+            {
+              'title': 'Record not found',
+              'detail': 'Wrong email/reference/token or password',
+              'code': '404',
+              'status': '404'
+            }
+          ],
+          'links': {
+            'self': '/reference/v1/customer_accounts/email:fake@fake.com'
+          }
+        })
+
+      expect.assertions(3)
+
+      return SHIFTClient.getCustomerAccountByEmailV1(customerAccountEmail)
+        .catch(error => {
+          expect(error).toEqual(new Error('Request failed with status code 404'))
+          expect(error.response.data.errors[0].title).toEqual('Record not found')
+          expect(error.response.data.errors[0].detail).toEqual('Wrong email/reference/token or password')
+        })
+    })
+  })
+
+  describe('getCustomerAccountByTokenV1', () => {
+    test('returns a customer account with a valid token', () => {
+      const token = 'S2sa1wQTZVxWy_f4_T8p'
+
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/token:${token}`)
+        .reply(200, getAccountByTokenResponse)
+
+      return SHIFTClient.getCustomerAccountByTokenV1(token)
+        .then(response => {
+          expect(response.status).toEqual(200)
+          expect(response.data).toEqual(getAccountByTokenResponseParsed)
+        })
+    })
+
+    test('returns an error with a token that does not exist or is invalid', () => {
+      const token = '12345678911234567891'
+
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/token:${token}`)
+        .reply(404, {
+          'errors': [
+            {
+              'title': 'Record not found',
+              'detail': 'Wrong email/reference/token or password',
+              'code': '404',
+              'status': '404'
+            }
+          ],
+          'links': {
+            'self': '/reference/v1/customer_accounts/token:12345678911234567891'
+          }
+        })
+
+      expect.assertions(3)
+
+      return SHIFTClient.getCustomerAccountByTokenV1(token)
+        .catch(error => {
+          expect(error).toEqual(new Error('Request failed with status code 404'))
+          expect(error.response.data.errors[0].title).toEqual('Record not found')
+          expect(error.response.data.errors[0].detail).toEqual('Wrong email/reference/token or password')
+        })
+      })
+  })
+  
   describe('createOrderV1', () => {
     test('creates an order with valid data', () => {
       const body = {
