@@ -146,8 +146,28 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
-  createOrderV1(orderPayload) {
+  createOrderV1 (orderPayload) {
     return orderEndpoints.createOrderV1(orderPayload).then(this.determineResponse)
+  }
+
+  getCustomerAccountByEmailV1 (email) {
+    return accountEndpoints.getCustomerAccountByEmailV1(email)
+      .then(this.determineResponse)
+  }
+
+  createPasswordRecoveryV1 (accountId, data) {
+    return accountEndpoints.createPasswordRecoveryV1(accountId, data)
+      .then(this.determineResponse)
+  }
+
+  getCustomerAccountByTokenV1 (token) {
+    return accountEndpoints.getCustomerAccountByTokenV1(token)
+      .then(this.determineResponse)
+  }
+
+  updateCustomerAccountPasswordV1 (accountId, body) {
+    return accountEndpoints.updateCustomerAccountPasswordV1(accountId, body)
+      .then(this.determineResponse)
   }
 
   determineResponse (response) {
