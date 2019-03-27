@@ -39,10 +39,7 @@ class SHIFTClient {
           return this.assignCartToCustomerV1(response.data.data.id, req.session.customerId)
         }
         return response
-      }).then(response => {
-        this.createCartCookie(res, response)
-        return response
-      })
+      }).then(this.determineResponse)
   }
 
   assignCartToCustomerV1 (cartId, customerId) {
@@ -177,16 +174,6 @@ class SHIFTClient {
     return {
       status: response.status,
       data: payload
-    }
-  }
-
-  // TODO: migrate this to shift-next
-  createCartCookie (res, response) {
-    if (response.data.id) {
-      res.cookie('cart', response.data.id, {
-        signed: true,
-        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
-      })
     }
   }
 }
