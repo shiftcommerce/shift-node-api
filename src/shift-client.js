@@ -10,6 +10,8 @@ const categoryEndpoints = require('./endpoints/category-endpoints')
 const accountEndpoints = require('./endpoints/account-endpoints')
 const orderEndpoints = require('./endpoints/order-endpoints')
 
+const util = require('util')
+
 class SHIFTClient {
   getMenusV1 (query) {
     return menuEndpoints.getMenusV1(query)
@@ -105,7 +107,8 @@ class SHIFTClient {
   getStaticPageV1 (id, query) {
     return staticPageEndpoints.getStaticPageV1(id, query)
       .then(response => {
-        console.log({response})
+        console.log('unparsed', util.inspect(response, { showHidden: false, depth: null }))
+        
         return response
       })
       .then(this.determineResponse)
