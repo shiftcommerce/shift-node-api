@@ -107,7 +107,8 @@ class SHIFTClient {
   getStaticPageV1 (id, query) {
     return staticPageEndpoints.getStaticPageV1(id, query)
       .then(response => {
-        console.log('unparsed', util.inspect(response, { showHidden: false, depth: null }))
+        console.log('unparsed')
+        console.log(util.inspect(response, false, null, true))
         
         return response
       })
