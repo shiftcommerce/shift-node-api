@@ -104,6 +104,10 @@ class SHIFTClient {
 
   getStaticPageV1 (id, query) {
     return staticPageEndpoints.getStaticPageV1(id, query)
+      .then(response => {
+        console.log({response})
+        return response
+      })
       .then(this.determineResponse)
   }
 
