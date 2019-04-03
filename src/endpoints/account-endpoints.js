@@ -9,6 +9,10 @@ function getAccountV1 (queryObject, customerId) {
   })
 }
 
+function updateCustomerAccountV1 (body, customerAccountId) {
+  return HTTPClient.patch(`v1/customer_accounts/${customerAccountId}`, body)
+}
+
 function createCustomerAccountV1 (account) {
   return HTTPClient.post('v1/customer_accounts', account).then(response => {
     return {
@@ -66,6 +70,7 @@ function updateCustomerAccountPasswordV1 (accountId, body) {
 
 module.exports = {
   getAccountV1,
+  updateCustomerAccountV1,
   createCustomerAccountV1,
   loginCustomerAccountV1,
   getCustomerOrdersV1,
