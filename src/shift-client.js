@@ -116,6 +116,10 @@ class SHIFTClient {
     return accountEndpoints.getAccountV1(queryObject, customerId)
   }
 
+  updateCustomerAccountV1 (body, customerId) {
+    return accountEndpoints.updateCustomerAccountV1(body, customerId)
+  }
+
   createCustomerAccountV1 (account) {
     return accountEndpoints.createCustomerAccountV1(account)
   }
