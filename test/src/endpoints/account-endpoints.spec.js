@@ -1,5 +1,6 @@
 const { getAccountV1,
   createCustomerAccountV1,
+  updateCustomerAccountV1,
   loginCustomerAccountV1,
   getCustomerOrdersV1,
   getAddressBookV1,
@@ -59,6 +60,34 @@ describe('getAccountV1', () => {
       .reply(200, accountData)
 
     return getAccountV1(queryObject, customerId)
+      .then(response => {
+        expect(response.status).toEqual(200)
+        expect(response.data).toEqual(accountData)
+      })
+  })
+})
+
+describe('updateCustomerAccountV1', () => {
+  test("update the customer account's details", () => {
+    const accountData = {
+      id: '10',
+      attributes: {
+        key: 'value'
+      }
+    }
+
+    const updatePayload = {
+      type: 'customer_account',
+      data: {
+        email: 'new@example.com'
+      }
+    }
+
+    nock(shiftApiConfig.get().apiHost)
+      .patch(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/77`, updatePayload)
+      .reply(200, accountData)
+
+    return updateCustomerAccountV1(updatePayload, 77)
       .then(response => {
         expect(response.status).toEqual(200)
         expect(response.data).toEqual(accountData)
