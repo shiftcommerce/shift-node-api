@@ -142,6 +142,11 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
+  updateAddressV1 (body, addressId) {
+    return accountEndpoints.updateAddressV1(body, addressId)
+      .then(this.determineResponse)
+  }
+
   deleteAddressV1 (addressId, customerAccountId) {
     return accountEndpoints.deleteAddressV1(addressId, customerAccountId)
       .then(this.determineResponse)

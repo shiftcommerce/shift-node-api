@@ -48,6 +48,10 @@ function createAddressBookEntryV1 (body, customerAccountId) {
   return HTTPClient.post(`v1/customer_accounts/${customerAccountId}/addresses`, body)
 }
 
+function updateAddressV1 (body, addressId) {
+  return HTTPClient.patch(`v1/addresses/${addressId}`, body)
+}
+
 function deleteAddressV1 (addressId, customerAccountId) {
   return HTTPClient.delete(`v1/customer_accounts/${customerAccountId}/addresses/${addressId}`)
 }
@@ -80,5 +84,6 @@ module.exports = {
   getCustomerAccountByEmailV1,
   createPasswordRecoveryV1,
   getCustomerAccountByTokenV1,
-  updateCustomerAccountPasswordV1
+  updateCustomerAccountPasswordV1,
+  updateAddressV1
 }
