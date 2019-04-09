@@ -8,7 +8,9 @@ const { getAccountV1,
   deleteAddressV1,
   createPasswordRecoveryV1,
   getCustomerAccountByEmailV1,
-  getCustomerAccountByTokenV1 } = require('../../../src/endpoints/account-endpoints')
+  getCustomerAccountByTokenV1,
+  updateAddressV1
+} = require('../../../src/endpoints/account-endpoints')
 const nock = require('nock')
 const axios = require('axios')
 const httpAdapter = require('axios/lib/adapters/http')
@@ -576,6 +578,34 @@ describe('getCustomerAccountByTokenV1', () => {
         expect(error).toEqual(new Error('Request failed with status code 404'))
         expect(error.response.data.errors[0].title).toEqual('Record not found')
         expect(error.response.data.errors[0].detail).toEqual('Wrong email/reference/token or password')
+      })
+  })
+})
+
+describe('updateAddressV1', () => {
+  test("updates the address", () => {
+    const addressData = {
+      id: '10',
+      attributes: {
+        key: 'value'
+      }
+    }
+
+    const updatePayload = {
+      type: 'addresses',
+      data: {
+        first_name: 'John'
+      }
+    }
+
+    nock(shiftApiConfig.get().apiHost)
+      .patch(`/${shiftApiConfig.get().apiTenant}/v1/addresses/77`, updatePayload)
+      .reply(200, addressData)
+
+    return updateAddressV1(updatePayload, 77)
+      .then(response => {
+        expect(response.status).toEqual(200)
+        expect(response.data).toEqual(addressData)
       })
   })
 })
