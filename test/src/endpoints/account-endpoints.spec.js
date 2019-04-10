@@ -9,7 +9,7 @@ const { getAccountV1,
   createPasswordRecoveryV1,
   getCustomerAccountByEmailV1,
   getCustomerAccountByTokenV1,
-  updateAddressV1
+  updateCustomerAddressV1
 } = require('../../../src/endpoints/account-endpoints')
 const nock = require('nock')
 const axios = require('axios')
@@ -582,7 +582,7 @@ describe('getCustomerAccountByTokenV1', () => {
   })
 })
 
-describe('updateAddressV1', () => {
+describe('updateCustomerAddressV1', () => {
   test("updates the address", () => {
     const addressData = {
       id: '10',
@@ -599,10 +599,10 @@ describe('updateAddressV1', () => {
     }
 
     nock(shiftApiConfig.get().apiHost)
-      .patch(`/${shiftApiConfig.get().apiTenant}/v1/addresses/77`, updatePayload)
+      .patch(`/${shiftApiConfig.get().apiTenant}/v1/customer_accounts/20/addresses/77`, updatePayload)
       .reply(200, addressData)
 
-    return updateAddressV1(updatePayload, 77)
+    return updateCustomerAddressV1(updatePayload, 77, 20)
       .then(response => {
         expect(response.status).toEqual(200)
         expect(response.data).toEqual(addressData)
