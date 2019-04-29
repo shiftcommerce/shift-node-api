@@ -107,6 +107,11 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
+  getArticleStaticPageV1 (query) {
+    return staticPageEndpoints.getArticleStaticPageV1(query)
+      .then(this.determineResponse)
+  }
+
   getCategoryV1 (id) {
     return categoryEndpoints.getCategoryV1(id)
       .then(this.determineResponse)
