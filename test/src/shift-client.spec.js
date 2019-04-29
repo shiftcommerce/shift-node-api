@@ -2,6 +2,8 @@ const SHIFTClient = require('../../src/shift-client')
 const nock = require('nock')
 const { shiftApiConfig } = require('../../src/index')
 
+
+
 // Fixtures
 const menuResponse = require('../fixtures/menu-response-payload')
 const menuResponseParsed = require('../fixtures/menu-response-payload-parsed')
@@ -9,6 +11,8 @@ const cartResponse = require('../fixtures/new-cart-response')
 const cartResponseParsed = require('../fixtures/new-cart-response-parsed')
 const staticPageResponse = require('../fixtures/staticpage-response')
 const staticPageResponseParsed = require('../fixtures/staticpage-response-parsed')
+const articleStaticPageResponse = require('../fixtures/article-staticpage-response')
+const articleStaticPageResponseParsed = require('../fixtures/article-staticpage-response-parsed')
 const slugResponse = require('../fixtures/slug-response')
 const slugResponseParsed = require('../fixtures/slug-response-parsed')
 const categoryResponse = require('../fixtures/category-response')
@@ -479,6 +483,48 @@ describe('SHIFTClient', () => {
         .catch(error => {
           expect(error.response.status).toBe(404)
           expect(error.response.data.errors[0].title).toEqual('Record not found')
+        })
+    })
+  })
+
+  describe('getArticleStaticPageV1', () => {
+    test.only('endpoint returns a static page with articles', () => {
+      const queryObject = {
+        filter: {
+          filter: {
+            and: [
+              {
+                id: {
+                  gt: '7'
+                }
+              },
+              {
+                static_page_folder_id: {
+                  eq: '1'
+                }
+              },
+              {
+                published: {
+                  eq: 'true'
+                }
+              }
+            ]
+          }
+        },
+        page: {
+          size: 1
+        }
+      }
+
+      nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/static_pages`)
+        .query(queryObject)
+        .reply(200, articleStaticPageResponse)
+      
+      return SHIFTClient.getArticleStaticPageV1(queryObject)
+        .then(response => {
+          expect(response.status).toEqual(200)
+          expect(response.data).toEqual(articleStaticPageResponseParsed)
         })
     })
   })
