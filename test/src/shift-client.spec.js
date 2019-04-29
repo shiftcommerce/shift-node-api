@@ -488,7 +488,7 @@ describe('SHIFTClient', () => {
   })
 
   describe('getArticleStaticPageV1', () => {
-    test.only('endpoint returns a static page with articles', () => {
+    test('endpoint returns a static page with articles', () => {
       const queryObject = {
         filter: {
           filter: {
