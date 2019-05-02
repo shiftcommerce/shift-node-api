@@ -99,7 +99,7 @@ class HTTPClient {
         return Promise.resolve({ status: response.status, data: response.data })
       })
       .catch(error => {
-        //console.log('Error is:', error)
+        console.log('Error is:', error)
         return Promise.reject(error)
       })
   }
