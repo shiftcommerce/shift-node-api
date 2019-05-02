@@ -11,8 +11,8 @@ module.exports = {
         asset_folder: {
           type: 'asset_folders',
           attributes: {
-            name: 'Product Imagery',
-            reference: 'product_imagery'
+            name: 'my folder',
+            reference: 'my_folder'
           }
         }
       }

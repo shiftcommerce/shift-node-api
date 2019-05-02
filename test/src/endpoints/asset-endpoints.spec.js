@@ -38,7 +38,11 @@ describe('createAssetFilesV1', () => {
       {
         name: 'foo',
         reference: 'img_foo',
-        remote_file_url: 'http://example.com/some/path/to/a/file.jpg'
+        remote_file_url: 'http://example.com/some/path/to/a/file.jpg',
+        folder: {
+          name: 'my folder',
+          reference: 'my_folder'
+        }
       },
       {
         name: 'foo2',
@@ -75,21 +79,24 @@ describe('createProductAssetFiles', () => {
       },
       {
         product_reference: 'bar',
-        asset_file_reference: 'img_bar'
+        asset_file_reference: 'img_bar',
+        position: 0
       },
       {
         product_reference: 'foo',
-        asset_file_reference: 'img_bar'
+        asset_file_reference: 'img_bar',
+        position: 1
+
       },
       {
         product_reference: 'bar',
-        asset_file_reference: 'img_bar2'
+        asset_file_reference: 'img_bar2',
+        position: 1
       }
     ]
 
     return createProductAssetFilesV1(mappings)
       .then(response => {
-        console.log(request)
         expect(JSON.parse(request)).toEqual(createProductAssetsRequest)
         expect(response.status).toEqual(201)
         expect(response.data).toEqual(newImportResponse)

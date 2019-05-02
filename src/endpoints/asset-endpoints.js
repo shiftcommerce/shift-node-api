@@ -8,7 +8,7 @@ const bulkHeaders = {
 /**
  * Bulk add assets
  *
- * @param [{ name, reference, remote_file_url }] assets
+ * @param [{ name, reference, remote_file_url, asset_folder: { name, reference } }] assets
  */
 function createAssetsFilesV1 (assets) {
   const data = assets.map(asset => {
@@ -23,8 +23,8 @@ function createAssetsFilesV1 (assets) {
         asset_folder: {
           type: 'asset_folders',
           attributes: {
-            name: 'Product Imagery',
-            reference: 'product_imagery'
+            name: asset.folder ? asset.folder.name : 'Product Imagery',
+            reference: asset.folder ? asset.folder.reference : 'product_imagery'
           }
         }
       }
@@ -54,14 +54,14 @@ function createAssetsFilesV1 (assets) {
 /**
  * Bulk add mapping between asset files and products
  *
- * @param [{ product_reference, asset_file_reference }] req
+ * @param [{ product_reference, asset_file_reference, position }] req
  */
 function createProductAssetFilesV1 (mappings) {
   const data = mappings.map(mapping => {
     return {
       type: 'product_asset_files',
       attributes: {
-        position: 0,
+        position: mapping.position || 0,
         reference: 'join_' + mapping.product_reference + '_and_' + mapping.asset_file_reference,
         product_reference: mapping.product_reference,
         asset_file_reference: mapping.asset_file_reference
