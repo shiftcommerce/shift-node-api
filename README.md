@@ -63,7 +63,7 @@ Once the config has been defined you should be able to use `SHIFTClient`
 
 **getStaticPageV1(id, query)**
 
-**getCategoryV1(id)**
+**getCategoryV1(id, query)**
 
 **getAccountV1(queryObject, customerId)**
 
