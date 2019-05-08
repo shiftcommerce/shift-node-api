@@ -6,6 +6,7 @@ const { shiftApiConfig } = require('../../../src/index')
 
 // Fixtures
 const categoryResponse = require('../../fixtures/category-response')
+const categoryQueryResponse = require('../../fixtures/category-query-response')
 
 axios.defaults.adapter = httpAdapter
 
@@ -28,6 +29,23 @@ describe('getCategoryV1', () => {
       .then(response => {
         expect(response.status).toEqual(200)
         expect(response.data).toEqual(categoryResponse)
+      })
+  })
+
+  test('returns a category with template when given a correct id and query', () => {
+    const queryObject = {
+      include: 'template'
+    }
+
+    nock(shiftApiConfig.get().apiHost)
+      .get(`/${shiftApiConfig.get().apiTenant}/v1/category_trees/reference:web/categories/3`)
+      .query(queryObject)
+      .reply(200, categoryQueryResponse)
+
+    return getCategoryV1(3, queryObject)
+      .then(response => {
+        expect(response.status).toEqual(200)
+        expect(response.data).toEqual(categoryQueryResponse)
       })
   })
 
