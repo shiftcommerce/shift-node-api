@@ -2,20 +2,20 @@ const axios = require('axios')
 const qs = require('qs')
 const shiftApiConfig = require('./lib/config')
 
-const headers = {
+const defaultHeaders = {
   'Content-Type': 'application/vnd.api+json',
   'Accept': 'application/vnd.api+json'
 }
 
 class HTTPClient {
-  get (url, queryObject) {
+  get (url, queryObject, headers = {}) {
     const query = qs.stringify(queryObject)
     const requestUrl = this.createRequestUrl(url, query)
 
     const response = axios({
       method: 'get',
       url: requestUrl,
-      headers: headers,
+      headers: { ...defaultHeaders, ...headers },
       auth: {
         username: shiftApiConfig.get().apiTenant,
         password: shiftApiConfig.get().apiAccessToken
@@ -25,13 +25,13 @@ class HTTPClient {
     return this.determineResponse(response)
   }
 
-  post (url, body) {
+  post (url, body, headers = {}) {
     const requestUrl = this.createRequestUrl(url)
 
     const response = axios({
       method: 'post',
       url: requestUrl,
-      headers: headers,
+      headers: { ...defaultHeaders, ...headers },
       auth: {
         username: shiftApiConfig.get().apiTenant,
         password: shiftApiConfig.get().apiAccessToken
@@ -42,13 +42,13 @@ class HTTPClient {
     return this.determineResponse(response)
   }
 
-  patch (url, body) {
+  patch (url, body, headers = {}) {
     const requestUrl = this.createRequestUrl(url)
 
     const response = axios({
       method: 'patch',
       url: requestUrl,
-      headers: headers,
+      headers: { ...defaultHeaders, ...headers },
       auth: {
         username: shiftApiConfig.get().apiTenant,
         password: shiftApiConfig.get().apiAccessToken
@@ -59,13 +59,13 @@ class HTTPClient {
     return this.determineResponse(response)
   }
 
-  delete (url) {
+  delete (url, headers = {}) {
     const requestUrl = this.createRequestUrl(url)
 
     const response = axios({
       method: 'delete',
       url: requestUrl,
-      headers: headers,
+      headers: { ...defaultHeaders, ...headers },
       auth: {
         username: shiftApiConfig.get().apiTenant,
         password: shiftApiConfig.get().apiAccessToken

@@ -51,7 +51,52 @@ describe('HTTPClient', () => {
 
       return expect(HTTPClient.get(url)).rejects.toEqual(new Error('Request failed with status code 404'))
     })
+
+    test('default headers are passed', async () => {
+      let headers = {}
+
+      // capture headers from any get request
+      nock(process.env.API_HOST).get(() => true).reply(function () { headers = this.req.headers })
+
+      await HTTPClient.get('someurl', {})
+
+      expect(headers).toMatchObject({
+        'content-type': 'application/vnd.api+json',
+        'accept': 'application/vnd.api+json'
+      })
+    })
+
+    test('default headers can be added to', async () => {
+      let headers = {}
+
+      // capture headers from any get request
+      nock(process.env.API_HOST).get(() => true).reply(function () { headers = this.req.headers })
+
+      await HTTPClient.get('someurl', {}, { 'x-dummy-header': 'somevalue' })
+
+      expect(headers).toMatchObject({
+        'content-type': 'application/vnd.api+json',
+        'accept': 'application/vnd.api+json',
+        'x-dummy-header': 'somevalue'
+      })
+    })
+
+    test('default headers can be overwritten', async () => {
+      let headers = {}
+
+      // capture headers from any get request
+      nock(process.env.API_HOST).get(() => true).reply(function () { headers = this.req.headers })
+
+      await HTTPClient.get('someurl', {}, { 'Accept': 'somevalue' })
+
+      expect(headers).toMatchObject({
+        'content-type': 'application/vnd.api+json',
+        'accept': 'somevalue'
+      })
+    })
+
   })
+
 
   describe('post', () => {
     test('saves and returns data', () => {
@@ -75,6 +120,50 @@ describe('HTTPClient', () => {
 
       return expect(HTTPClient.post(url, body)).resolves.toEqual({ status: 201, data: registerPayload })
     })
+
+    test('default headers are passed', async () => {
+      let headers = {}
+
+      // capture headers from any post request
+      nock(process.env.API_HOST).post(() => true).reply(function () { headers = this.req.headers })
+
+      await HTTPClient.post('someurl', '')
+
+      expect(headers).toMatchObject({
+        'content-type': 'application/vnd.api+json',
+        'accept': 'application/vnd.api+json'
+      })
+    })
+
+    test('default headers can be added to', async () => {
+      let headers = {}
+
+      // capture headers from any post request
+      nock(process.env.API_HOST).post(() => true).reply(function () { headers = this.req.headers })
+
+      await HTTPClient.post('someurl', '', { 'x-dummy-header': 'somevalue' })
+
+      expect(headers).toMatchObject({
+        'content-type': 'application/vnd.api+json',
+        'accept': 'application/vnd.api+json',
+        'x-dummy-header': 'somevalue'
+      })
+    })
+
+    test('default headers can be overwritten', async () => {
+      let headers = {}
+
+      // capture headers from any post request
+      nock(process.env.API_HOST).post(() => true).reply(function () { headers = this.req.headers })
+
+      await HTTPClient.post('someurl', '', { 'Accept': 'somevalue' })
+
+      expect(headers).toMatchObject({
+        'content-type': 'application/vnd.api+json',
+        'accept': 'somevalue'
+      })
+    })
+
   })
 
   describe('delete', () => {
