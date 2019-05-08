@@ -31,6 +31,10 @@ Once the config has been defined you should be able to use `SHIFTClient`
 
 ### SHIFTClient
 
+**createAssetsFilesV1(assets)**
+
+**createProductAssetFilesV1(mappings)**
+
 **getMenusV1(query)**
 
 **getCartV1(cartId)**
