@@ -19,7 +19,7 @@ class SHIFTClient {
         const parsedPayload = new ApiParser().parse(response.data)
         return {
           status: response.status,
-          data: parsedPayload.data[0]
+          data: parsedPayload.data
         }
       })
   }

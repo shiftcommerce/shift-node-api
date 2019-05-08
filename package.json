@@ -1,6 +1,6 @@
 {
   "name": "@shiftcommerce/shift-node-api",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "main": "src/index.js",
   "author": "Shift Commerce",
   "license": "ISC",
@@ -12,6 +12,7 @@
     "qs": "^6.6.0"
   },
   "devDependencies": {
+    "@babel/runtime": "^7.4.4",
     "jest": "^23.6.0",
     "nock": "^10.0.6",
     "regenerator-runtime": "^0.13.1"
