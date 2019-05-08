@@ -28,8 +28,8 @@ module.exports = {
         asset_folder: {
           type: 'asset_folders',
           attributes: {
-            name: 'Product Imagery',
-            reference: 'product_imagery'
+            name: 'somewhere',
+            reference: 'somereference'
           }
         }
       }

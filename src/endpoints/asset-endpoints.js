@@ -23,8 +23,8 @@ function createAssetsFilesV1 (assets) {
         asset_folder: {
           type: 'asset_folders',
           attributes: {
-            name: asset.folder ? asset.folder.name : 'Product Imagery',
-            reference: asset.folder ? asset.folder.reference : 'product_imagery'
+            name: asset.folder.name,
+            reference: asset.folder.reference
           }
         }
       }
@@ -61,7 +61,7 @@ function createProductAssetFilesV1 (mappings) {
     return {
       type: 'product_asset_files',
       attributes: {
-        position: mapping.position || 0,
+        position: mapping.position,
         reference: 'join_' + mapping.product_reference + '_and_' + mapping.asset_file_reference,
         product_reference: mapping.product_reference,
         asset_file_reference: mapping.asset_file_reference

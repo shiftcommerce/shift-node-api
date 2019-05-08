@@ -47,7 +47,11 @@ describe('createAssetFilesV1', () => {
       {
         name: 'foo2',
         reference: 'img_foo2',
-        remote_file_url: 'http://example.com/some/path/to/a/different_file.jpg'
+        remote_file_url: 'http://example.com/some/path/to/a/different_file.jpg',
+        folder: {
+          name: 'somewhere',
+          reference: 'somereference'
+        }
       }
     ]
 
@@ -75,7 +79,8 @@ describe('createProductAssetFiles', () => {
     const mappings = [
       {
         product_reference: 'foo',
-        asset_file_reference: 'img_foo'
+        asset_file_reference: 'img_foo',
+        position: 5
       },
       {
         product_reference: 'bar',

@@ -3,7 +3,7 @@ module.exports = {
     {
       attributes: {
         asset_file_reference: 'img_foo',
-        position: 0,
+        position: 5,
         product_reference: 'foo',
         reference: 'join_foo_and_img_foo'
       },
