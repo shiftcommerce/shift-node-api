@@ -114,8 +114,8 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
-  getCategoryV1 (id) {
-    return categoryEndpoints.getCategoryV1(id)
+  getCategoryV1 (id, query) {
+    return categoryEndpoints.getCategoryV1(id, query)
       .then(this.determineResponse)
   }
 
