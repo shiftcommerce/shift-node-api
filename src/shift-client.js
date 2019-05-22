@@ -47,11 +47,7 @@ class SHIFTClient {
             .then(() => this.getCartV1(cartId, req.query))
         }
         // retrieve cart
-
-        const respon = this.getCartV1(cartId, req.query)
-        console.log({ query: req.query })
-        console.log({ respon })
-        return respon
+        return this.getCartV1(cartId, req.query)
       })
   }
 
