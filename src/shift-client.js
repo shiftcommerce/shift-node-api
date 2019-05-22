@@ -29,12 +29,12 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
-  addLineItemToCartV1 (req, res, cartId, query) {
+  addLineItemToCartV1 (req, res, cartId) {
     return cartEndpoints.addLineItemToCartV1(req, res, cartId)
-      .then(() => this.getCartV1(cartId, query))
+      .then(() => this.getCartV1(cartId, req.query))
   }
 
-  createNewCartWithLineItemV1 (req, res, query) {
+  createNewCartWithLineItemV1 (req, res) {
     return cartEndpoints.createNewCartWithLineItemV1(req, res)
       .then((response) => {
         // Extract and assign cartId from response
@@ -44,12 +44,12 @@ class SHIFTClient {
         if (customerId) {
           // Assign customerId to cart and retrieve updated cart
           return this.assignCartToCustomerV1(cartId, customerId)
-            .then(() => this.getCartV1(cartId, query))
+            .then(() => this.getCartV1(cartId, req.query))
         }
         // retrieve cart
 
-        const respon = this.getCartV1(cartId, query)
-        console.log({ query })
+        const respon = this.getCartV1(cartId, req.query)
+        console.log({ query: req.query })
         console.log({ respon })
         return respon
       })
