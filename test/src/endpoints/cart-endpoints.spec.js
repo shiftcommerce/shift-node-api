@@ -42,6 +42,26 @@ describe('getCartV1', () => {
         expect(response.data).toEqual({ cart: 'cart_data' })
       })
   })
+
+  test("returns a cart with line item products when given a correct id and query", () => {
+    const queryObject = {
+      include: 'line_items.item.product'
+    }
+
+    const cartQueryResponse = { cart: 'cart_data' }
+
+    nock(shiftApiConfig.get().apiHost)
+      .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/35`)
+      .query(queryObject)
+      .reply(200, cartQueryResponse)
+
+
+    return getCartV1(cartId, queryObject)
+      .then(response => {
+        expect(response.status).toEqual(200)
+        expect(response.data).toEqual(cartQueryResponse)
+      })
+  })
 })
 
 describe('createNewCartWithLineItemV1', () => {

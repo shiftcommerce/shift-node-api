@@ -24,14 +24,14 @@ class SHIFTClient {
       })
   }
 
-  getCartV1 (cartId) {
-    return cartEndpoints.getCartV1(cartId)
+  getCartV1 (cartId, query) {
+    return cartEndpoints.getCartV1(cartId, query)
       .then(this.determineResponse)
   }
 
-  addLineItemToCartV1 (req, res, cartId) {
+  addLineItemToCartV1 (req, res, cartId, query) {
     return cartEndpoints.addLineItemToCartV1(req, res, cartId)
-      .then(() => this.getCartV1(cartId))
+      .then(() => this.getCartV1(cartId, query))
   }
 
   createNewCartWithLineItemV1 (req, res) {
@@ -49,14 +49,14 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
-  deleteLineItemV1 (lineItemId, cartId) {
+  deleteLineItemV1 (lineItemId, cartId, query) {
     return cartEndpoints.deleteLineItemV1(lineItemId, cartId)
-      .then(() => this.getCartV1(cartId))
+      .then(() => this.getCartV1(cartId, query))
   }
 
-  updateLineItemV1 (newQuantity, cartId, lineItemId) {
+  updateLineItemV1 (newQuantity, cartId, lineItemId, query) {
     return cartEndpoints.updateLineItemV1(newQuantity, cartId, lineItemId)
-      .then(() => this.getCartV1(cartId))
+      .then(() => this.getCartV1(cartId, query))
   }
 
   addCartCouponV1 (couponCode, cartId) {
