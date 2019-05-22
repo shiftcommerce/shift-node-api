@@ -201,7 +201,8 @@ class SHIFTClient {
     const payload = parsedPayload || response.data
     return {
       status: response.status,
-      data: payload
+      data: payload,
+      headers: response.headers
     }
   }
 }

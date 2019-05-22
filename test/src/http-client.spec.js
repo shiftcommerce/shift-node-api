@@ -28,7 +28,7 @@ describe('HTTPClient', () => {
         .get(`/${process.env.API_TENANT}/${url}`)
         .reply(200, staticPagePayload)
 
-      return expect(HTTPClient.get(url)).resolves.toEqual({ status: 200, data: staticPagePayload })
+      return expect(HTTPClient.get(url)).resolves.toEqual({ status: 200, data: staticPagePayload, headers: { 'content-type': 'application/json' } })
     })
 
     test('returns error data if a bad request', () => {
@@ -97,7 +97,6 @@ describe('HTTPClient', () => {
 
   })
 
-
   describe('post', () => {
     test('saves and returns data', () => {
       const url = 'v1/customer_accounts'
@@ -118,7 +117,8 @@ describe('HTTPClient', () => {
         .post(`/${process.env.API_TENANT}/${url}`)
         .reply(201, registerPayload)
 
-      return expect(HTTPClient.post(url, body)).resolves.toEqual({ status: 201, data: registerPayload })
+      const expected = { status: 201, data: registerPayload, headers: { 'content-type': 'application/json' } }
+      return expect(HTTPClient.post(url, body)).resolves.toEqual(expected)
     })
 
     test('default headers are passed', async () => {
@@ -176,7 +176,7 @@ describe('HTTPClient', () => {
         .reply(204)
 
       // Make the request
-      return expect(HTTPClient.delete(url)).resolves.toEqual({ data: '', status: 204 })
+      return expect(HTTPClient.delete(url)).resolves.toEqual({ data: '', status: 204, headers: {} })
     })
 
     test('correctly returns error responses and logs to console', () => {

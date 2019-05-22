@@ -1,6 +1,7 @@
 const axios = require('axios')
 const qs = require('qs')
 const shiftApiConfig = require('./lib/config')
+const { setCacheHeaders } = require('./lib/set-cache-headers')
 
 const defaultHeaders = {
   'Content-Type': 'application/vnd.api+json',
@@ -21,7 +22,6 @@ class HTTPClient {
         password: shiftApiConfig.get().apiAccessToken
       }
     })
-
     return this.determineResponse(response)
   }
 
@@ -96,7 +96,12 @@ class HTTPClient {
   determineResponse (response) {
     return response
       .then(response => {
-        return Promise.resolve({ status: response.status, data: response.data })
+        setCacheHeaders(response)
+        return Promise.resolve({
+          status: response.status,
+          data: response.data,
+          headers: response.headers
+        })
       })
       .catch(error => {
         console.log('Error is:', error)
