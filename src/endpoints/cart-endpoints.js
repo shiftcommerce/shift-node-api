@@ -19,7 +19,7 @@ function addLineItemToCartV1 (req, res, cartId) {
   return HTTPClient.post(`v1/carts/${cartId}/line_items`, payload)
 }
 
-function createNewCartWithLineItemV1 (req, res) {
+function createNewCartWithLineItemV1 (req, res, query) {
   const payload = {
     data: {
       type: 'carts',
@@ -32,7 +32,7 @@ function createNewCartWithLineItemV1 (req, res) {
     }
   }
 
-  return HTTPClient.post(`v1/carts`, payload)
+  return HTTPClient.post(`v1/carts`, payload, query)
 }
 
 function assignCartToCustomerV1 (cartId, customerId) {

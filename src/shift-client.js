@@ -34,8 +34,8 @@ class SHIFTClient {
       .then(() => this.getCartV1(cartId, query))
   }
 
-  createNewCartWithLineItemV1 (req, res) {
-    return cartEndpoints.createNewCartWithLineItemV1(req, res)
+  createNewCartWithLineItemV1 (req, res, query) {
+    return cartEndpoints.createNewCartWithLineItemV1(req, res, query)
       .then(response => {
         if (req.session.customerId) {
           return this.assignCartToCustomerV1(response.data.data.id, req.session.customerId)
