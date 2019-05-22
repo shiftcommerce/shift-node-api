@@ -35,13 +35,20 @@ class SHIFTClient {
   }
 
   createNewCartWithLineItemV1 (req, res, query) {
-    return cartEndpoints.createNewCartWithLineItemV1(req, res, query)
-      .then(response => {
-        if (req.session.customerId) {
-          return this.assignCartToCustomerV1(response.data.data.id, req.session.customerId)
+    return cartEndpoints.createNewCartWithLineItemV1(req, res)
+      .then((response) => {
+        // Extract and assign cartId from response
+        const cartId = response.data.data.id
+        // Extract and assign customerId from request session
+        const customerId = req.session.customerId
+        if (customerId) {
+          // Assign customerId to cart and retrieve updated cart
+          return this.assignCartToCustomerV1(cartId, customerId)
+            .then(() => this.getCartV1(cartId, query))
         }
-        return response
-      }).then(this.determineResponse)
+        // retrieve cart
+        return this.getCartV1(cartId, query)
+      })
   }
 
   assignCartToCustomerV1 (cartId, customerId) {

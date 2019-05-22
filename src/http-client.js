@@ -25,9 +25,8 @@ class HTTPClient {
     return this.determineResponse(response)
   }
 
-  post (url, body, queryObject= {}, headers = {}) {
-    const query = qs.stringify(queryObject)
-    const requestUrl = this.createRequestUrl(url, query)
+  post (url, body, headers = {}) {
+    const requestUrl = this.createRequestUrl(url)
 
     const response = axios({
       method: 'post',
