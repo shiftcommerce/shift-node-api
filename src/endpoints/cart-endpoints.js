@@ -1,11 +1,7 @@
 const HTTPClient = require('../http-client')
 
 function getCartV1 (cartId, query) {
-  return HTTPClient.get(`v1/carts/${cartId}`, query).then((response) => {
-    console.log({ cart: JSON.stringify(response) } )
-
-    return response
-  })
+  return HTTPClient.get(`v1/carts/${cartId}`, query)
 }
 
 function addLineItemToCartV1 (req, res, cartId) {

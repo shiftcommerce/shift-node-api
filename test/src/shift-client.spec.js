@@ -79,10 +79,14 @@ describe('SHIFTClient', () => {
 
   describe('getCartV1()', () => {
     test('should return a parsed response', () => {
+      const queryObject = {
+        include: 'line_items.item.product,line_items.line_item_discounts,discount_summaries,customer_account,billing_address,shipping_address,shipping_method'
+      }
       const cartId = '35'
 
       nock(shiftApiConfig.get().apiHost)
-        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/35`)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .query(queryObject)
         .reply(200, cartResponse)
 
       return SHIFTClient.getCartV1(cartId)
@@ -95,6 +99,9 @@ describe('SHIFTClient', () => {
 
   describe('addLineItemToCartV1()', () => {
     test('should add lineitem to existing cart then call getCartV1()', () => {
+      const queryObject = {
+        include: 'line_items.item.product,line_items.line_item_discounts,discount_summaries,customer_account,billing_address,shipping_address,shipping_method'
+      }
       const cartId = '35'
       const req = {
         body: {
@@ -108,7 +115,8 @@ describe('SHIFTClient', () => {
         .reply(200)
 
       const getCartNock = nock(shiftApiConfig.get().apiHost)
-        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/35`)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .query(queryObject)
         .reply(200, cartResponse)
 
       return SHIFTClient.addLineItemToCartV1(req, {}, cartId)
@@ -177,6 +185,9 @@ describe('SHIFTClient', () => {
 
   describe('deleteLineItemV1()', () => {
     test('updates lineItem quantity to existing cart, then calls getCartV1()', () => {
+      const queryObject = {
+        include: 'line_items.item.product,line_items.line_item_discounts,discount_summaries,customer_account,billing_address,shipping_address,shipping_method'
+      }
       const cartId = '14'
       const lineItemId = '1'
 
@@ -188,6 +199,7 @@ describe('SHIFTClient', () => {
 
       const getCartNock = nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .query(queryObject)
         .reply(200, { cart: 'cart_data' })
 
       return SHIFTClient.deleteLineItemV1(lineItemId, cartId)
@@ -202,6 +214,9 @@ describe('SHIFTClient', () => {
 
   describe('updateLineItemV1()', () => {
     test('updates lineItem quantity to existing cart, then calls getCart()', () => {
+      const queryObject = {
+        include: 'line_items.item.product,line_items.line_item_discounts,discount_summaries,customer_account,billing_address,shipping_address,shipping_method'
+      }
       const cartId = '14'
       const lineItemId = '1'
       const newQuantity = 2
@@ -212,6 +227,7 @@ describe('SHIFTClient', () => {
 
       const getCartNock = nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .query(queryObject)
         .reply(200, { cart: 'cart_data' })
 
       return SHIFTClient.updateLineItemV1(newQuantity, cartId, lineItemId)

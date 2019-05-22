@@ -17,6 +17,7 @@ const { shiftApiConfig } = require('../../../src/index')
 
 // Fixtures
 const cartResponse = require('../../fixtures/new-cart-response')
+const cartQueryResponse = require('../../fixtures/cart-query-response')
 
 axios.defaults.adapter = httpAdapter
 
@@ -31,27 +32,12 @@ afterEach(() => { nock.cleanAll() })
 
 describe('getCartV1', () => {
   test('fetches cart from the api', () => {
-    const cartId = '35'
-    nock(shiftApiConfig.get().apiHost)
-      .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/35`)
-      .reply(200, { cart: 'cart_data' })
-
-    return getCartV1(cartId)
-      .then(response => {
-        expect(response.status).toEqual(200)
-        expect(response.data).toEqual({ cart: 'cart_data' })
-      })
-  })
-
-  test("returns a cart with line item products when given a correct id and query", () => {
     const queryObject = {
-      include: 'line_items.item.product'
+      include: 'line_items.item.product,line_items.line_item_discounts,discount_summaries,customer_account,billing_address,shipping_address,shipping_method'
     }
 
-    const cartQueryResponse = { cart: 'cart_data' }
-
     nock(shiftApiConfig.get().apiHost)
-      .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/35`)
+      .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/10132`)
       .query(queryObject)
       .reply(200, cartQueryResponse)
 
