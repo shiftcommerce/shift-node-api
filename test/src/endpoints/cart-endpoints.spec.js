@@ -17,7 +17,7 @@ const { shiftApiConfig } = require('../../../src/index')
 
 // Fixtures
 const cartResponse = require('../../fixtures/new-cart-response')
-const cartQueryResponse = require('../../fixtures/cart-query-response')
+const cartResponseParsed = require('../../fixtures/new-cart-response-parsed')
 
 axios.defaults.adapter = httpAdapter
 
@@ -39,13 +39,13 @@ describe('getCartV1', () => {
     nock(shiftApiConfig.get().apiHost)
       .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/10132`)
       .query(queryObject)
-      .reply(200, cartQueryResponse)
+      .reply(200, cartResponse)
 
 
     return getCartV1(cartId, queryObject)
       .then(response => {
         expect(response.status).toEqual(200)
-        expect(response.data).toEqual(cartQueryResponse)
+        expect(response.data).toEqual(cartResponseParsed)
       })
   })
 })

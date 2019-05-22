@@ -156,12 +156,18 @@ describe('SHIFTClient', () => {
         .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/3`)
         .reply(200, { data: { id: '3' } })
 
+      const fetchCartRequest = nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .query(queryObject)
+        .reply(200, cartResponseParsed)
+
       return SHIFTClient.createNewCartWithLineItemV1(req, res)
-        .then((response, res) => {
+        .then((response) => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual({ id: '3' })
+          expect(response.data).toEqual(cartResponseParsed)
           expect(createCartRequest.isDone()).toEqual(true)
           expect(updateCartRequest.isDone()).toEqual(true)
+          expect(fetchCartRequest.isDone()).toEqual(true)
         })
     })
   })
