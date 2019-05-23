@@ -26,7 +26,10 @@ class SHIFTClient {
 
   getCartV1 (cartId, query) {
     return cartEndpoints.getCartV1(cartId, query)
-      .then(this.determineResponse)
+      .then((response) => {
+        console.log({ unparsed: JSON.stringify(response) })
+        return this.determineResponse(response)
+      })
   }
 
   addLineItemToCartV1 (req, res, cartId) {
