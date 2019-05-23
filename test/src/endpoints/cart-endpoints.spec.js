@@ -32,6 +32,7 @@ afterEach(() => { nock.cleanAll() })
 
 describe('getCartV1', () => {
   test('fetches cart from the api', () => {
+    const cartId = '10132'
     const queryObject = {
       fields: {
         line_items: 'line_item_discounts,sku,stock_available_level,sub_total,tax_rate,title,total,total_discount,item,unit_price,unit_quantity',
@@ -47,7 +48,7 @@ describe('getCartV1', () => {
     }
 
     nock(shiftApiConfig.get().apiHost)
-      .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/10132`)
+      .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
       .query(queryObject)
       .reply(200, cartResponse)
 
@@ -55,7 +56,7 @@ describe('getCartV1', () => {
     return getCartV1(cartId, queryObject)
       .then(response => {
         expect(response.status).toEqual(200)
-        expect(response.data).toEqual(cartResponseParsed)
+        expect(response.data).toEqual(cartResponse)
       })
   })
 })

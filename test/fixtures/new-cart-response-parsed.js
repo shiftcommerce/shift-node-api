@@ -1,18 +1,393 @@
 module.exports = {
-  id: '279',
-  meta_attributes: {},
-  updated_at: '2019-02-04T10:47:26Z',
-  created_at: '2019-02-04T10:47:26Z',
-  email: '',
-  channel: 'web',
-  line_items_count: 1,
-  shipping_total_discount: 0,
-  shipping_discount_name: null,
-  free_shipping: false,
-  test: false,
-  sub_total: 33.97,
-  tax: 5.41,
-  total_discount: 1.5,
-  total: 32.47,
-  shipping_total: 0
+  'status':200,
+  'data':{
+    'id':'10132',
+    'meta_attributes':{
+
+    },
+    'updated_at':'2019-05-23T17:53:48Z',
+    'created_at':'2019-05-22T10:31:44Z',
+    'email':'',
+    'channel':'web',
+    'line_items_count':3,
+    'shipping_total_discount':-1.95,
+    'shipping_discount_name':'Free Standard Delivery on orders over £10',
+    'free_shipping':true,
+    'test':false,
+    'sub_total':197.06,
+    'tax':27.51,
+    'total_discount':32,
+    'total':165.06,
+    'shipping_total':1.95,
+    'line_items':[
+      {
+        'id':'12310',
+        'sku':'1830250969883',
+        'stock_available_level':71,
+        'sub_total':63.37,
+        'tax_rate':'0.2',
+        'title':'Variant 1',
+        'total':53.08,
+        'total_discount':10.29,
+        'unit_price':63.37,
+        'unit_quantity':1,
+        'item':{
+          'id':'335',
+          'title':'Variant 1',
+          'sku':'1830250969883',
+          'price':63.37,
+          'price_includes_taxes':true,
+          'picture_url':'https://shift-platform-dev.s3-eu-west-1.amazonaws.com/uploads/asset_file/asset_file/149/1537803726.8135095-SEPIA_cup_270ml.jpg',
+          'stock_allocated_level':29,
+          'meta_attributes':{
+
+          },
+          'product':{
+            'id':'171',
+            'title':'SEPIA cup 270ml',
+            'slug':'cups/seed_product_47',
+            'canonical_path':'/cups/seed_product_47',
+            'picture_url':'https://shift-platform-dev.s3-eu-west-1.amazonaws.com/uploads/asset_file/asset_file/149/1537803726.8135095-SEPIA_cup_270ml.jpg',
+            'meta_attributes':{
+
+            }
+          }
+        },
+        'line_item_discounts':[
+          {
+            'id':'9c56ea5d-ffb9-41e6-8f7f-26d56b2ecb92',
+            'line_item_number':1,
+            'promotion_id':22,
+            'total':3.22
+          },
+          {
+            'id':'98b6eab5-168c-46ab-9630-664d1dc4f279',
+            'line_item_number':1,
+            'promotion_id':23,
+            'total':7.07
+          }
+        ]
+      },
+      {
+        'id':'12185',
+        'sku':'csp1',
+        'stock_available_level':969,
+        'sub_total':63,
+        'tax_rate':'0.2',
+        'title':'1kg',
+        'total':52.77,
+        'total_discount':10.23,
+        'unit_price':5.25,
+        'unit_quantity':12,
+        'item':{
+          'id':'348',
+          'title':'1kg',
+          'sku':'csp1',
+          'price':5.25,
+          'price_includes_taxes':true,
+          'picture_url':'https://shift-platform-dev.s3-eu-west-1.amazonaws.com/uploads/asset_file/asset_file/188/1539787307.1700277-coffee-product-4.jpg',
+          'stock_allocated_level':31,
+          'meta_attributes':{
+
+          },
+          'product':{
+            'id':'180',
+            'title':'Colombia Suarez Project',
+            'slug':'coffee/colombia-suarez-project',
+            'canonical_path':'/coffee/colombia-suarez-project',
+            'picture_url':'https://shift-platform-dev.s3-eu-west-1.amazonaws.com/uploads/asset_file/asset_file/188/1539787307.1700277-coffee-product-4.jpg',
+            'meta_attributes':{
+
+            }
+          }
+        },
+        'line_item_discounts':[
+          {
+            'id':'b687b393-4e6a-4a18-b860-cf1951abce5a',
+            'line_item_number':1,
+            'promotion_id':22,
+            'total':0.27
+          },
+          {
+            'id':'396d2a8d-7e6a-4d5d-a038-d82c200aa48b',
+            'line_item_number':2,
+            'promotion_id':22,
+            'total':0.27
+          },
+          {
+            'id':'f529653d-536a-43a8-8fe9-457750ba303f',
+            'line_item_number':3,
+            'promotion_id':22,
+            'total':0.27
+          },
+          {
+            'id':'bc52d204-5362-4f36-8564-71b2301b8c40',
+            'line_item_number':4,
+            'promotion_id':22,
+            'total':0.27
+          },
+          {
+            'id':'9c055656-6ccd-4003-a0ab-1676303d2b84',
+            'line_item_number':5,
+            'promotion_id':22,
+            'total':0.27
+          },
+          {
+            'id':'e040dc02-11c4-4095-accc-3b7e86017417',
+            'line_item_number':6,
+            'promotion_id':22,
+            'total':0.27
+          },
+          {
+            'id':'52636d9a-e89c-48a8-8321-7480c6447e5f',
+            'line_item_number':7,
+            'promotion_id':22,
+            'total':0.27
+          },
+          {
+            'id':'d1f795d7-6833-499c-a762-7e05fc1d9286',
+            'line_item_number':8,
+            'promotion_id':22,
+            'total':0.27
+          },
+          {
+            'id':'3c121ae9-131f-4ac0-a62d-28e6d720878a',
+            'line_item_number':9,
+            'promotion_id':22,
+            'total':0.27
+          },
+          {
+            'id':'a2a9eaca-4fec-4bc1-863d-c81745666926',
+            'line_item_number':10,
+            'promotion_id':22,
+            'total':0.27
+          },
+          {
+            'id':'542d2683-6817-4d56-9449-b384bacea513',
+            'line_item_number':11,
+            'promotion_id':22,
+            'total':0.27
+          },
+          {
+            'id':'75ff4c77-1cdd-4824-b2be-c619234f1670',
+            'line_item_number':12,
+            'promotion_id':22,
+            'total':0.23
+          },
+          {
+            'id':'a5aaa8a5-02b4-4689-95c7-0bfc4d5ffa48',
+            'line_item_number':1,
+            'promotion_id':23,
+            'total':0.59
+          },
+          {
+            'id':'74395b18-28a7-48fc-a4bd-103f80b317aa',
+            'line_item_number':2,
+            'promotion_id':23,
+            'total':0.59
+          },
+          {
+            'id':'7d1966b3-e3ae-4714-8eee-bee9c8c957dc',
+            'line_item_number':3,
+            'promotion_id':23,
+            'total':0.59
+          },
+          {
+            'id':'b6ca0013-886a-4dfd-96bf-1de63bb36f8e',
+            'line_item_number':4,
+            'promotion_id':23,
+            'total':0.59
+          },
+          {
+            'id':'bdae773c-1fca-4dcf-86b4-6deb1b2bd1ae',
+            'line_item_number':5,
+            'promotion_id':23,
+            'total':0.59
+          },
+          {
+            'id':'5a403f00-c470-49ab-be4d-d342e24a9072',
+            'line_item_number':6,
+            'promotion_id':23,
+            'total':0.59
+          },
+          {
+            'id':'c5c29b34-7f11-4be3-93f5-cd7864ebdd86',
+            'line_item_number':7,
+            'promotion_id':23,
+            'total':0.59
+          },
+          {
+            'id':'4163afba-0f43-4bbb-a74b-d9167e36fe73',
+            'line_item_number':8,
+            'promotion_id':23,
+            'total':0.59
+          },
+          {
+            'id':'fa6c2fca-9c0e-42d7-a2a0-51cffc1d58d3',
+            'line_item_number':9,
+            'promotion_id':23,
+            'total':0.59
+          },
+          {
+            'id':'9d2c1a66-f930-4155-b2f0-f6cd159bb67f',
+            'line_item_number':10,
+            'promotion_id':23,
+            'total':0.59
+          },
+          {
+            'id':'abe22a17-9255-42ae-b06d-28602c9318b5',
+            'line_item_number':11,
+            'promotion_id':23,
+            'total':0.59
+          },
+          {
+            'id':'ddda1c65-c860-4750-a1d1-a1327d94e769',
+            'line_item_number':12,
+            'promotion_id':23,
+            'total':0.54
+          }
+        ]
+      },
+      {
+        'id':'12179',
+        'sku':'6851857191687',
+        'stock_available_level':92,
+        'sub_total':70.69,
+        'tax_rate':'0.2',
+        'title':'Variant 1',
+        'total':59.21,
+        'total_discount':11.48,
+        'unit_price':70.69,
+        'unit_quantity':1,
+        'item':{
+          'id':'287',
+          'title':'Variant 1',
+          'sku':'6851857191687',
+          'price':70.69,
+          'price_includes_taxes':true,
+          'picture_url':'https://shift-platform-dev.s3-eu-west-1.amazonaws.com/uploads/asset_file/asset_file/107/1537803707.4451518-OCT_cup___saucer_300ml.jpg',
+          'stock_allocated_level':8,
+          'meta_attributes':{
+
+          },
+          'product':{
+            'id':'147',
+            'title':'OCT cup & saucer 300ml',
+            'slug':'cups/seed_product_23',
+            'canonical_path':'/cups/seed_product_23',
+            'picture_url':'https://shift-platform-dev.s3-eu-west-1.amazonaws.com/uploads/asset_file/asset_file/107/1537803707.4451518-OCT_cup___saucer_300ml.jpg',
+            'meta_attributes':{
+
+            }
+          }
+        },
+        'line_item_discounts':[
+          {
+            'id':'f14f7294-b717-435a-b2ca-96e116072030',
+            'line_item_number':1,
+            'promotion_id':22,
+            'total':3.58
+          },
+          {
+            'id':'5870dca4-6f3c-44d6-b7bc-d4ef21a9955f',
+            'line_item_number':1,
+            'promotion_id':23,
+            'total':7.9
+          }
+        ]
+      }
+    ],
+    'discount_summaries':[
+      {
+        'id':'fc85589e-a57d-41b3-b927-2144244501d3',
+        'name':'£10 off orders overs over £50',
+        'promotion_id':22,
+        'total':10
+      },
+      {
+        'id':'8eab435f-7098-4786-a26b-0e51a8e3d52a',
+        'name':'£22 off orders overs over £150',
+        'promotion_id':23,
+        'total':22
+      }
+    ],
+    'customer_account':null,
+    'billing_address':{
+      'id':'10560',
+      'address_line_1':'1 Test Street',
+      'address_line_2':'',
+      'city':'Leeds',
+      'country':'GB',
+      'first_name':'M',
+      'last_name':'M',
+      'meta_attributes':{
+        'email':{
+          'value':'mufudzi.masaire@shiftcommerce.com',
+          'data_type':'text'
+        },
+        'phone_number':{
+          'value':'7800000000',
+          'data_type':'text'
+        }
+      },
+      'postcode':'LS1 4DS',
+      'preferred_billing':false,
+      'preferred_shipping':false,
+      'state':null
+    },
+    'shipping_address':{
+      'id':'10560',
+      'address_line_1':'1 Test Street',
+      'address_line_2':'',
+      'city':'Leeds',
+      'country':'GB',
+      'first_name':'M',
+      'last_name':'M',
+      'meta_attributes':{
+        'email':{
+          'value':'mufudzi.masaire@shiftcommerce.com',
+          'data_type':'text'
+        },
+        'phone_number':{
+          'value':'7800000000',
+          'data_type':'text'
+        }
+      },
+      'postcode':'LS1 4DS',
+      'preferred_billing':false,
+      'preferred_shipping':false,
+      'state':null
+    },
+    'shipping_method':{
+      'id':'21',
+      'meta_attributes':{
+        'working_days':{
+          'value':'2',
+          'data_type':'text'
+        }
+      },
+      'updated_at':'2019-04-24T15:01:18Z',
+      'created_at':'2018-09-24T15:43:27Z',
+      'label':'Standard',
+      'sku':'REGULAR',
+      'reference':'STANDARD',
+      'description':'Standard - shipping method',
+      'sub_total':1.62,
+      'tax':0.33,
+      'total':1.95,
+      'tax_rate':0.2
+    }
+  },
+  'headers':{
+    'content-type':'application/vnd.api+json',
+    'cache-control':'private, max-age=0, must-revalidate',
+    'etag':'W/\\"d60eb1d55849f3618b239669fb1c6616\\"',
+    'strict-transport-security':'max-age=15552000; includeSubDomains',
+    'accept-ranges':'bytes, bytes',
+    'age':'0',
+    'transfer-encoding':'chunked',
+    'date':'Thu, 23 May 2019 17:53:48 GMT',
+    'connection':'close',
+    'external-surrogate-key':''
+  }
 }
