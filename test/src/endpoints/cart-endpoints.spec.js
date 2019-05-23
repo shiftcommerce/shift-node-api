@@ -56,7 +56,7 @@ describe('getCartV1', () => {
     return getCartV1(cartId, queryObject)
       .then(response => {
         expect(response.status).toEqual(200)
-        expect(response.data).toEqual(cartResponseParsed)
+        expect(response.data).toEqual(cartResponse)
       })
   })
 })

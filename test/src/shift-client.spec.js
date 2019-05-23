@@ -91,44 +91,49 @@ describe('SHIFTClient', () => {
 
   describe('getCartV1()', () => {
     test('should return a parsed response', () => {
-      const cartId = '35'
+      const cartId = '10132'
 
       nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
         .query(cartDefaultQuery)
         .reply(200, cartResponse)
 
-      return SHIFTClient.getCartV1(cartId)
+      return SHIFTClient.getCartV1(cartId, cartDefaultQuery)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual(cartResponseParsed)
+          expect(response.data.id).toEqual(cartResponseParsed.data.id)
+          expect(response.data.line_items).toEqual(cartResponseParsed.data.line_items)
+          expect(response.data.shipping_method).toEqual(cartResponseParsed.data.shipping_method)
         })
     })
   })
 
   describe('addLineItemToCartV1()', () => {
     test('should add lineitem to existing cart then call getCartV1()', () => {
-      const cartId = '35'
+      const cartId = '10132'
       const req = {
         body: {
           variantId: '100',
           quantity: 3
-        }
+        },
+        query: cartDefaultQuery
       }
 
       nock(shiftApiConfig.get().apiHost)
-        .post(`/${shiftApiConfig.get().apiTenant}/v1/carts/35/line_items`)
+        .post(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}/line_items`)
         .reply(200)
 
       const getCartNock = nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
-        .query(queryObject)
+        .query(cartDefaultQuery)
         .reply(200, cartResponse)
 
       return SHIFTClient.addLineItemToCartV1(req, {}, cartId)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual(cartResponseParsed)
+          expect(response.data.id).toEqual(cartResponseParsed.data.id)
+          expect(response.data.line_items).toEqual(cartResponseParsed.data.line_items)
+          expect(response.data.shipping_method).toEqual(cartResponseParsed.data.shipping_method)
           expect(getCartNock.isDone()).toEqual(true)
         })
     })
@@ -144,7 +149,8 @@ describe('SHIFTClient', () => {
         body: {
           variantId: '100',
           quantity: 4
-        }
+        },
+        query: cartDefaultQuery
       }
 
       const res = {
@@ -154,23 +160,27 @@ describe('SHIFTClient', () => {
         cookie: jest.fn()
       }
 
+      const cartId = '10132'
+
       const createCartRequest = nock(shiftApiConfig.get().apiHost)
         .post(`/${shiftApiConfig.get().apiTenant}/v1/carts`)
-        .reply(201, { data: { id: '3' } })
+        .reply(201, { data: { id: cartId } })
 
       const updateCartRequest = nock(shiftApiConfig.get().apiHost)
-        .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/3`)
-        .reply(200, { data: { id: '3' } })
+        .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .reply(200, { data: { id: cartId } })
 
       const fetchCartRequest = nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
-        .query(queryObject)
-        .reply(200, cartResponseParsed)
+        .query(cartDefaultQuery)
+        .reply(200, cartResponse)
 
       return SHIFTClient.createNewCartWithLineItemV1(req, res)
         .then((response) => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual(cartResponseParsed)
+          expect(response.data.id).toEqual(cartResponseParsed.data.id)
+          expect(response.data.line_items).toEqual(cartResponseParsed.data.line_items)
+          expect(response.data.shipping_method).toEqual(cartResponseParsed.data.shipping_method)
           expect(createCartRequest.isDone()).toEqual(true)
           expect(updateCartRequest.isDone()).toEqual(true)
           expect(fetchCartRequest.isDone()).toEqual(true)
@@ -197,7 +207,7 @@ describe('SHIFTClient', () => {
 
   describe('deleteLineItemV1()', () => {
     test('updates lineItem quantity to existing cart, then calls getCartV1()', () => {
-      const cartId = '14'
+      const cartId = '10132'
       const lineItemId = '1'
 
       const deleteLineItemMock = nock(shiftApiConfig.get().apiHost)
@@ -209,12 +219,14 @@ describe('SHIFTClient', () => {
       const getCartNock = nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
         .query(cartDefaultQuery)
-        .reply(200, { cart: 'cart_data' })
+        .reply(200, cartResponse)
 
-      return SHIFTClient.deleteLineItemV1(lineItemId, cartId)
+      return SHIFTClient.deleteLineItemV1(lineItemId, cartId, cartDefaultQuery)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual({ cart: 'cart_data' })
+          expect(response.data.id).toEqual(cartResponseParsed.data.id)
+          expect(response.data.line_items).toEqual(cartResponseParsed.data.line_items)
+          expect(response.data.shipping_method).toEqual(cartResponseParsed.data.shipping_method)
           expect(deleteLineItemMock.isDone()).toEqual(true)
           expect(getCartNock.isDone()).toEqual(true)
         })
@@ -223,7 +235,7 @@ describe('SHIFTClient', () => {
 
   describe('updateLineItemV1()', () => {
     test('updates lineItem quantity to existing cart, then calls getCart()', () => {
-      const cartId = '14'
+      const cartId = '10132'
       const lineItemId = '1'
       const newQuantity = 2
 
@@ -234,12 +246,14 @@ describe('SHIFTClient', () => {
       const getCartNock = nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
         .query(cartDefaultQuery)
-        .reply(200, { cart: 'cart_data' })
+        .reply(200, cartResponse)
 
-      return SHIFTClient.updateLineItemV1(newQuantity, cartId, lineItemId)
+      return SHIFTClient.updateLineItemV1(newQuantity, cartId, lineItemId, cartDefaultQuery)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual({ cart: 'cart_data' })
+          expect(response.data.id).toEqual(cartResponseParsed.data.id)
+          expect(response.data.line_items).toEqual(cartResponseParsed.data.line_items)
+          expect(response.data.shipping_method).toEqual(cartResponseParsed.data.shipping_method)
           expect(updateLineItemMock.isDone()).toEqual(true)
           expect(getCartNock.isDone()).toEqual(true)
         })
@@ -265,7 +279,7 @@ describe('SHIFTClient', () => {
 
   describe('setCartShippingMethodV1()', () => {
     test('updates the cart with a shipping address id', () => {
-      const cartId = '14'
+      const cartId = '10132'
       const shippingMethodId = '12'
 
       const updateCartMock = nock(shiftApiConfig.get().apiHost)
@@ -274,13 +288,15 @@ describe('SHIFTClient', () => {
 
       const getCartNock = nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
-        .query(queryObject)
+        .query(cartDefaultQuery)
         .reply(200, cartResponse)
 
-      return SHIFTClient.setCartShippingMethodV1(cartId, shippingMethodId)
+      return SHIFTClient.setCartShippingMethodV1(cartId, shippingMethodId, cartDefaultQuery)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual(cartResponseParsed)
+          expect(response.data.id).toEqual(cartResponseParsed.data.id)
+          expect(response.data.line_items).toEqual(cartResponseParsed.data.line_items)
+          expect(response.data.shipping_method).toEqual(cartResponseParsed.data.shipping_method)
           expect(updateCartMock.isDone()).toBe(true)
           expect(getCartNock.isDone()).toBe(true)
         })
@@ -329,7 +345,7 @@ describe('SHIFTClient', () => {
 
   describe('setCartBillingAddressV1()', () => {
     test('should return a parsed response', () => {
-      const cartId = '35'
+      const cartId = '10132'
       const addressId = '12'
 
       nock(shiftApiConfig.get().apiHost)
@@ -338,13 +354,15 @@ describe('SHIFTClient', () => {
 
       const getCartNock = nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
-        .query(queryObject)
+        .query(cartDefaultQuery)
         .reply(200, cartResponse)
 
-      return SHIFTClient.setCartBillingAddressV1(addressId, cartId)
+      return SHIFTClient.setCartBillingAddressV1(addressId, cartId, cartDefaultQuery)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual(cartResponseParsed)
+          expect(response.data.id).toEqual(cartResponseParsed.data.id)
+          expect(response.data.line_items).toEqual(cartResponseParsed.data.line_items)
+          expect(response.data.shipping_method).toEqual(cartResponseParsed.data.shipping_method)
           expect(getCartNock.isDone()).toBe(true)
         })
     })
@@ -352,7 +370,7 @@ describe('SHIFTClient', () => {
 
   describe('setCartShippingAddressV1()', () => {
     test('should return a parsed response', () => {
-      const cartId = '35'
+      const cartId = '10132'
       const addressId = '12'
 
       nock(shiftApiConfig.get().apiHost)
@@ -361,13 +379,15 @@ describe('SHIFTClient', () => {
 
       const getCartNock = nock(shiftApiConfig.get().apiHost)
         .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
-        .query(queryObject)
+        .query(cartDefaultQuery)
         .reply(200, cartResponse)
 
-      return SHIFTClient.setCartShippingAddressV1(addressId, cartId)
+      return SHIFTClient.setCartShippingAddressV1(addressId, cartId, cartDefaultQuery)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual(cartResponseParsed)
+          expect(response.data.id).toEqual(cartResponseParsed.data.id)
+          expect(response.data.line_items).toEqual(cartResponseParsed.data.line_items)
+          expect(response.data.shipping_method).toEqual(cartResponseParsed.data.shipping_method)
           expect(getCartNock.isDone()).toBe(true)
         })
     })
