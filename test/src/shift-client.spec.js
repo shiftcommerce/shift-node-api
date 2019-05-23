@@ -4,14 +4,14 @@ const { shiftApiConfig } = require('../../src/index')
 
 const cartDefaultQuery = {
   fields: {
-    line_items: 'line_item_discounts,sku,stock_available_level,sub_total,tax_rate,total,total_discount,item,unit_price,unit_quantity',
-    variants: 'title,sku,price,picture_url,stock_allocated_level,meta_attributes,product',
+    line_items: 'line_item_discounts,sku,stock_available_level,sub_total,tax_rate,title,total,total_discount,item,unit_price,unit_quantity',
+    variants: 'title,sku,price,price_includes_taxes,picture_url,stock_allocated_level,meta_attributes,product',
     products: 'title,sku,slug,canonical_path,picture_url,meta_attributes',
     line_item_discounts: 'line_item_number,promotion_id,total',
     discount_summaries: 'name,promotion_id,total',
     customer_account: 'email,meta_attributes,reference',
-    addresses: 'address_line_1,address_line_2,city,country,first_name,last_name,state,postcode,preferred_billing,preferred_shipping',
-    shipping_method: 'label,meta_attributes,sub_total,total'
+    addresses: 'address_line_1,address_line_2,city,country,first_name,last_name,meta_attributes,postcode,preferred_billing,preferred_shipping,state',
+    shipping_method: 'description,label,meta_attributes,reference,sku,sub_total,tax,tax_rate,total'
   },
   include: 'line_items.item.product,line_items.line_item_discounts,discount_summaries,customer_account,billing_address,shipping_address,shipping_method'
 }
@@ -272,11 +272,17 @@ describe('SHIFTClient', () => {
         .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
         .reply(200, { cart: 'updated_cart_data' })
 
+      const getCartNock = nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .query(queryObject)
+        .reply(200, cartResponse)
+
       return SHIFTClient.setCartShippingMethodV1(cartId, shippingMethodId)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual({ cart: 'updated_cart_data' })
+          expect(response.data).toEqual(cartResponseParsed)
           expect(updateCartMock.isDone()).toBe(true)
+          expect(getCartNock.isDone()).toBe(true)
         })
     })
   })
@@ -330,10 +336,16 @@ describe('SHIFTClient', () => {
         .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
         .reply(200, { cart: 'updated_cart_data' })
 
+      const getCartNock = nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .query(queryObject)
+        .reply(200, cartResponse)
+
       return SHIFTClient.setCartBillingAddressV1(addressId, cartId)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual({ cart: 'updated_cart_data' })
+          expect(response.data).toEqual(cartResponseParsed)
+          expect(getCartNock.isDone()).toBe(true)
         })
     })
   })
@@ -347,10 +359,16 @@ describe('SHIFTClient', () => {
         .patch(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
         .reply(200, { cart: 'updated_cart_data' })
 
+      const getCartNock = nock(shiftApiConfig.get().apiHost)
+        .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/${cartId}`)
+        .query(queryObject)
+        .reply(200, cartResponse)
+
       return SHIFTClient.setCartShippingAddressV1(addressId, cartId)
         .then(response => {
           expect(response.status).toEqual(200)
-          expect(response.data).toEqual({ cart: 'updated_cart_data' })
+          expect(response.data).toEqual(cartResponseParsed)
+          expect(getCartNock.isDone()).toBe(true)
         })
     })
   })
