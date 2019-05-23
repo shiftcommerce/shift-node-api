@@ -37,7 +37,7 @@ Once the config has been defined you should be able to use `SHIFTClient`
 
 **getMenusV1(query)**
 
-**getCartV1(cartId)**
+**getCartV1(cartId, query)**
 
 **addLineItemToCartV1(req, res, cartId)**
 

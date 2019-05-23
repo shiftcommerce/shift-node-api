@@ -24,24 +24,31 @@ class SHIFTClient {
       })
   }
 
-  getCartV1 (cartId) {
-    return cartEndpoints.getCartV1(cartId)
+  getCartV1 (cartId, query) {
+    return cartEndpoints.getCartV1(cartId, query)
       .then(this.determineResponse)
   }
 
   addLineItemToCartV1 (req, res, cartId) {
     return cartEndpoints.addLineItemToCartV1(req, res, cartId)
-      .then(() => this.getCartV1(cartId))
+      .then(() => this.getCartV1(cartId, req.query))
   }
 
   createNewCartWithLineItemV1 (req, res) {
     return cartEndpoints.createNewCartWithLineItemV1(req, res)
-      .then(response => {
-        if (req.session.customerId) {
-          return this.assignCartToCustomerV1(response.data.data.id, req.session.customerId)
+      .then((response) => {
+        // Extract and assign cartId from response
+        const cartId = response.data.data.id
+        // Extract and assign customerId from request session
+        const customerId = req.session.customerId
+        if (customerId) {
+          // Assign customerId to cart and retrieve updated cart
+          return this.assignCartToCustomerV1(cartId, customerId)
+            .then(() => this.getCartV1(cartId, req.query))
         }
-        return response
-      }).then(this.determineResponse)
+        // retrieve cart
+        return this.getCartV1(cartId, req.query)
+      })
   }
 
   assignCartToCustomerV1 (cartId, customerId) {
@@ -49,14 +56,14 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
-  deleteLineItemV1 (lineItemId, cartId) {
+  deleteLineItemV1 (lineItemId, cartId, query) {
     return cartEndpoints.deleteLineItemV1(lineItemId, cartId)
-      .then(() => this.getCartV1(cartId))
+      .then(() => this.getCartV1(cartId, query))
   }
 
-  updateLineItemV1 (newQuantity, cartId, lineItemId) {
+  updateLineItemV1 (newQuantity, cartId, lineItemId, query) {
     return cartEndpoints.updateLineItemV1(newQuantity, cartId, lineItemId)
-      .then(() => this.getCartV1(cartId))
+      .then(() => this.getCartV1(cartId, query))
   }
 
   addCartCouponV1 (couponCode, cartId) {
@@ -64,9 +71,9 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
-  setCartShippingMethodV1 (cartId, shippingMethodId) {
+  setCartShippingMethodV1 (cartId, shippingMethodId, query) {
     return cartEndpoints.setCartShippingMethodV1(cartId, shippingMethodId)
-      .then(this.determineResponse)
+      .then(() => this.getCartV1(cartId, query))
   }
 
   getShippingMethodsV1 () {
@@ -79,13 +86,14 @@ class SHIFTClient {
       .then(this.determineResponse)
   }
 
-  setCartBillingAddressV1 (addressId, cartId) {
+  setCartBillingAddressV1 (addressId, cartId, query) {
     return cartEndpoints.setCartBillingAddressV1(addressId, cartId)
-      .then(this.determineResponse)
+      .then(() => this.getCartV1(cartId, query))
   }
 
-  setCartShippingAddressV1 (addressId, cartId) {
+  setCartShippingAddressV1 (addressId, cartId, query) {
     return cartEndpoints.setCartShippingAddressV1(addressId, cartId)
+      .then(() => this.getCartV1(cartId, query))
   }
 
   getResourceBySlugV1 (queryObject) {

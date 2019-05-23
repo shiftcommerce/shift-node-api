@@ -1,7 +1,7 @@
 const HTTPClient = require('../http-client')
 
-function getCartV1 (cartId) {
-  return HTTPClient.get(`v1/carts/${cartId}`)
+function getCartV1 (cartId, query) {
+  return HTTPClient.get(`v1/carts/${cartId}`, query)
 }
 
 function addLineItemToCartV1 (req, res, cartId) {

@@ -17,6 +17,7 @@ const { shiftApiConfig } = require('../../../src/index')
 
 // Fixtures
 const cartResponse = require('../../fixtures/new-cart-response')
+const cartResponseParsed = require('../../fixtures/new-cart-response-parsed')
 
 axios.defaults.adapter = httpAdapter
 
@@ -31,15 +32,30 @@ afterEach(() => { nock.cleanAll() })
 
 describe('getCartV1', () => {
   test('fetches cart from the api', () => {
-    const cartId = '35'
-    nock(shiftApiConfig.get().apiHost)
-      .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/35`)
-      .reply(200, { cart: 'cart_data' })
+    const queryObject = {
+      fields: {
+        line_items: 'line_item_discounts,sku,stock_available_level,sub_total,tax_rate,title,total,total_discount,item,unit_price,unit_quantity',
+        variants: 'title,sku,price,price_includes_taxes,picture_url,stock_allocated_level,meta_attributes,product',
+        products: 'title,sku,slug,canonical_path,picture_url,meta_attributes',
+        line_item_discounts: 'line_item_number,promotion_id,total',
+        discount_summaries: 'name,promotion_id,total',
+        customer_account: 'email,meta_attributes,reference',
+        addresses: 'address_line_1,address_line_2,city,country,first_name,last_name,meta_attributes,postcode,preferred_billing,preferred_shipping,state',
+        shipping_method: 'description,label,meta_attributes,reference,sku,sub_total,tax,tax_rate,total'
+      },
+      include: 'line_items.item.product,line_items.line_item_discounts,discount_summaries,customer_account,billing_address,shipping_address,shipping_method'
+    }
 
-    return getCartV1(cartId)
+    nock(shiftApiConfig.get().apiHost)
+      .get(`/${shiftApiConfig.get().apiTenant}/v1/carts/10132`)
+      .query(queryObject)
+      .reply(200, cartResponse)
+
+
+    return getCartV1(cartId, queryObject)
       .then(response => {
         expect(response.status).toEqual(200)
-        expect(response.data).toEqual({ cart: 'cart_data' })
+        expect(response.data).toEqual(cartResponseParsed)
       })
   })
 })
