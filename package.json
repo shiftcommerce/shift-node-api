@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "qs": "^6.6.0"
+    "qs": "^6.6.1"
   },
   "devDependencies": {
     "@babel/runtime": "^7.4.4",
